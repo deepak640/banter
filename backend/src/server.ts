@@ -13,7 +13,9 @@ interface AppError extends Error {
 }
 import createError from "http-errors";
 import { Conversation } from "models/conversation.model";
-import { Types } from "mongoose";
+import mongoose, { Types } from "mongoose";
+import { User } from "models/user.model";
+import { Message } from "models/message.model";
 
 connectDB();
 
@@ -112,26 +114,47 @@ io.on("connection", async (socket: Socket) => {
     const errorMsg = `Socket ${socket.id} tried to join conversation ${conversationId} but is not a participant`;
     socket.emit("error", { message: errorMsg });
     socket.disconnect();
-    throw new Error(errorMsg);
   }
   if (conversationId) {
     socket.join(conversationId);
-    console.log(
-      `Socket ${socket.id} joined conversation room: ${conversationId}`
-    );
+    await User.updateOne({ _id: userId }, { status: true });
   }
 
   // ✅ Correct: Listen on the socket, not io
-  socket.on(
-    "send-message",
-    (data: { conversationId: string; text: string; sender: string }) => {
-      // Emit the message only to the room with the given conversationId
-      io.to(data.conversationId).emit("receive-message", data);
-    }
-  );
+  type MessageData = { conversationId: string; text: string; hashId: string };
 
-  socket.on("disconnect", () => {
+  socket.on("send-message", async (data: MessageData) => {
+    // Emit the message only to the room with the given conversationId
+    // Save the message to the database
+    const message = new Message({
+      conversationId: data.conversationId,
+      content: data.text,
+      sender: userId,
+    });
+    await message.save();
+    io.to(data.conversationId).emit("receive-message", data);
+  });
+
+  // Listen for typing events
+  socket.on("typing-start", (data: MessageData) => {
+    // Broadcast to others in the room that a user is typing
+    socket.to(data.conversationId).emit("typing-start-notification", {
+      hashId: data.hashId,
+    });
+  });
+
+  socket.on("typing-stop", (data: MessageData) => {
+    // Broadcast to others in the room that a user has stopped typing
+    socket.to(data.conversationId).emit("typing-stop-notification", {
+      hashId: data.hashId,
+    });
+  });
+
+  socket.on("disconnect", async () => {
     console.log(`Client disconnected: ${socket.id}`);
+    if (userId) {
+      await User.findOneAndUpdate({ _id: userId }, { status: false });
+    }
   });
 });
 // Join a room with conversationId

@@ -15,6 +15,11 @@ const getConversations = async (userId: string) => {
   return res.data.conversations;
 };
 
+const getUserprofilebyConversationId = async (conversationId: string) => {
+  const res = await axios.get(`${prifix}/profile/${conversationId}`);
+  return res.data;
+};
+
 // Hooks
 export const useCreateConversation = () => {
   return useMutation({
@@ -26,5 +31,13 @@ export const useGetConversations = (userId: string) => {
   return useQuery({
     queryKey: ["conversations", userId],
     queryFn: () => getConversations(userId).then((data) => data),
+  });
+};
+
+export const useGetprofileByConversationId = (conversationId: string) => {
+  return useQuery({
+    queryKey: ["conversation-profile", conversationId],
+    queryFn: () =>
+      getUserprofilebyConversationId(conversationId).then((data) => data.participants)  ,
   });
 };

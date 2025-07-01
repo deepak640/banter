@@ -1,22 +1,55 @@
 "use client"
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import React from 'react'
-import { IoMdLogOut } from 'react-icons/io'
+import { LogOut, Search, Bell } from 'lucide-react';
+import Image from 'next/image';
+import avatar from "@/images/avtar.jpg";
 
 const Header = () => {
+
+  const { data: session } = useSession()
+
+  let user = session?.user
   const handleLogout = () => {
     signOut()
   }
   return (
-    <div className="flex justify-between items-center p-4 bg-gray-800 text-white">
-      <div className="text-2xl font-bold border rounded-4xl p-2">
-        {/* <Image /> */}
-        C
+    <header className="flex items-center justify-between h-20 px-6 bg-green-50 dark:bg-green-900 border-b border-green-200 dark:border-green-800">
+      <div className="flex items-center">
+        <div className="relative w-10 h-10">
+          <Image
+            src={avatar}
+            alt="User Avatar"
+            layout="fill"
+            objectFit="cover"
+            className="rounded-full"
+          />
+        </div>
+        <div className="ml-4">
+          <h2 className="text-lg font-semibold text-green-900 dark:text-white">{user?.name}</h2>
+          <p className="text-sm text-green-500 dark:text-green-400">Welcome back!</p>
+        </div>
       </div>
-      <div onClick={handleLogout}>
-        <IoMdLogOut size={30} />
+      <div className="flex items-center space-x-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-400" />
+          <input
+            type="text"
+            placeholder="Search..."
+            className="w-64 pl-10 pr-4 py-2 rounded-full bg-green-100 dark:bg-green-800 text-green-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+        </div>
+        <button className="p-2 rounded-full text-green-500 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-700">
+          <Bell className="w-6 h-6" />
+        </button>
+        <button
+          onClick={handleLogout}
+          className="p-2 rounded-full text-green-500 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-700"
+        >
+          <LogOut className="w-6 h-6" />
+        </button>
       </div>
-    </div>
+    </header>
   )
 }
 

@@ -6,9 +6,13 @@ import type React from "react"
 import { use, useState } from "react"
 import { FiUser, FiMail, FiLock, FiUserPlus, FiEye, FiEyeOff } from "react-icons/fi"
 
+import { signIn } from "next-auth/react"
+
 export default function RegisterForm() {
 
   const router = useRouter()
+  const [step, setStep] = useState(1) // 1 for registration, 2 for profile pic
+  const [profileImage, setProfileImage] = useState<File | null>(null)
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -42,6 +46,12 @@ export default function RegisterForm() {
     }
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProfileImage(e.target.files[0])
+    }
+  }
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword)
   }
@@ -52,29 +62,40 @@ export default function RegisterForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Validate before submission
-    if (formData.password !== formData.confirmPassword) {
-      setErrors((prev) => ({ ...prev, confirmPassword: "Passwords do not match" }))
-      return
-    }
-    if (formData.password.length < 6) {
-      setErrors((prev) => ({ ...prev, password: "Password must be at least 6 characters" }))
-      return
-    }
-    try {
-      const res = await registerUser(formData)
-      if (res) {
-        console.log(res)
-        toastSuccess("User registered successfully")
-        router.push("/auth?type=login")
+
+    if (step === 1) {
+      // Validate before submission
+      if (formData.password !== formData.confirmPassword) {
+        setErrors((prev) => ({ ...prev, confirmPassword: "Passwords do not match" }))
+        return
       }
-    } catch (error: any) {
-      toastError(error.response.data.message)
+      if (formData.password.length < 6) {
+        setErrors((prev) => ({ ...prev, password: "Password must be at least 6 characters" }))
+        return
+      }
+      try {
+        const res = await registerUser(formData)
+        if (res) {
+          console.log(res)
+          toastSuccess("User registered successfully")
+          setStep(2) // Move to profile picture upload step
+        }
+      } catch (error: any) {
+        toastError(error.response.data.message)
+      }
+    } else if (step === 2) {
+      // Handle profile image upload here
+      // For now, just log the file and proceed to login
+      console.log("Profile Image:", profileImage)
+      toastSuccess("Profile picture uploaded (simulated)")
+      signIn("credentials", { email: formData.email, password: formData.password, redirect: true, callbackUrl: "/" })
     }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4" style={{ viewTransitionName: "auth-container" }}>
+      {step === 1 && (
+        <>
       <div className="space-y-1">
         <label htmlFor="name" className="text-sm font-medium text-gray-700">
           Full Name
@@ -203,12 +224,49 @@ export default function RegisterForm() {
       </div>
 
       <button
-        type="submit"
-        className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-      >
-        <FiUserPlus className="mr-2" />
-        Create Account
-      </button>
+            type="submit"
+            className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            <FiUserPlus className="mr-2" />
+            Create Account
+          </button>
+        </>
+      )}
+
+      {step === 2 && (
+        <div className="space-y-4 text-center">
+          <h2 className="text-2xl font-bold text-gray-900">Upload Profile Picture</h2>
+          <div className="flex justify-center items-center">
+            <label htmlFor="profile-image" className="cursor-pointer">
+              {profileImage ? (
+                <img
+                  src={URL.createObjectURL(profileImage)}
+                  alt="Profile Preview"
+                  className="w-32 h-32 rounded-full object-cover border-4 border-blue-500 shadow-lg"
+                />
+              ) : (
+                <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-gray-500 text-6xl border-4 border-gray-300 shadow-lg">
+                  <FiUser />
+                </div>
+              )}
+              <input
+                id="profile-image"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+            </label>
+          </div>
+          <p className="text-sm text-gray-600">Click the circle to upload your profile picture.</p>
+          <button
+            type="submit"
+            className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Finish Registration
+          </button>
+        </div>
+      )}
     </form>
   )
 }

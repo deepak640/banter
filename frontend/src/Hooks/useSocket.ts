@@ -23,9 +23,10 @@ export const useSocket = ({
     }
     return () => {
       socketRef.current?.disconnect();
+      socketRef.current = null;
       console.log("❌ Disconnected from socket server");
     };
-  }, [userId]);
+  }, [userId, conversationId]);
 
   return socketRef;
 };

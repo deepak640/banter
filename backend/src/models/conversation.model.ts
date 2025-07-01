@@ -5,6 +5,7 @@ export interface IConversation {
   _id: Types.ObjectId;
   participants: Types.ObjectId[];
   isGroup: boolean;
+  lastMessage: Types.ObjectId;
   createdAt: Date;
   updateAt: Date;
 }
@@ -14,6 +15,7 @@ const ConversationSchema = new Schema<IConversation>(
   {
     participants: [Types.ObjectId],
     isGroup: Boolean,
+    lastMessage: Types.ObjectId,
   },
   { timestamps: true }
 );

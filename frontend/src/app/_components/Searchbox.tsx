@@ -17,9 +17,9 @@ const Searchbox = ({
         onChange={(e) => setInput(e.target.value)}
         placeholder='Search...'
         onKeyDown={handleKeyDown}
-        className='w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500'
+        className='flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm dark:bg-gray-700 dark:border-gray-600 dark:text-white'
       />
-      <button className='ml-2 px-4 py-2.5 bg-blue-500 text-white rounded-lg hover:bg-blue-600' onClick={handleSendMessage}>
+      <button className='ml-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2' onClick={handleSendMessage}>
         <IoSend size={20} />
       </button>
     </div>

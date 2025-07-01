@@ -98,3 +98,51 @@ export const getConversations = async (
     conversations: conversations,
   });
 };
+
+export const getprofileByConversationId = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { id: conversationId } = req.params;
+
+  try {
+    let pipeline: PipelineStage[] = [
+      {
+        $match: {
+          _id: new Types.ObjectId(conversationId),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "participants",
+          foreignField: "_id",
+          as: "participants",
+        },
+      },
+      {
+        $project: {
+          participants: {
+            _id: 1,
+            name: 1,
+            profile: 1,
+            status: 1,
+          },
+        },
+      },
+    ];
+    const result = await Conversation.aggregate(pipeline).exec();
+
+    if (!result || result.length === 0) {
+      res.status(404).json({ message: "Conversation not found" });
+    } else {
+      res.json({
+        participants: result[0].participants,
+      });
+    }
+  } catch (error) {
+    console.log("Error fetching conversation profile:", error);
+    next(error);
+  }
+};

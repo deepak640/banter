@@ -2,29 +2,39 @@
 import React, { useEffect, useState } from "react";
 import Searchbox from "@/app/_components/Searchbox";
 import { useSocket } from "@/Hooks/useSocket";
-import { RxAvatar, RxDotsVertical } from "react-icons/rx";
 import { Message } from "@/types/state";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { toastError } from "@/utils/toast";
+import Image from "next/image";
+import avatar from "@/images/avtar.jpg";
+import { MoreVertical } from "lucide-react";
+import { useGetprofileByConversationId } from "@/services/conversation.service";
+import { useGetMessages } from "@/services/message.service";
+
 export default function Chat({ slug }: { slug?: string }) {
-  console.log("Chat component rendered with slug:", slug);
   const { data: session } = useSession();
-  const searchParams = useSearchParams();
-  const userId = searchParams.get("userId");
-  console.log("User ID from search params:", userId);
   const socket = useSocket({ userId: session?.user?._id ?? "", conversationId: slug ?? "" });
+
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
 
+  // API
+  const { data: participants } = useGetprofileByConversationId(slug ?? "");
+  const { data: messagesData } = useGetMessages(slug ?? "");
+  console.log("||", messagesData);
+  let userProfile = participants?.find(
+    (participant: any) => participant._id !== session?.user._id
+  );
   const handleSendMessage = () => {
     if (input.trim() && socket.current) {
       const message = { text: input, hashId: session?.user.hashId, conversationId: slug };
-      socket.current.emit("send-message", message); // Fixed: Use socket directly
+      socket.current.emit("send-message", message);
       setInput("");
     }
   };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSendMessage();
@@ -36,14 +46,11 @@ export default function Chat({ slug }: { slug?: string }) {
   };
 
   useEffect(() => {
-    console.log("Socket connection established:", socket.current);
     if (!socket.current) return;
     socket.current.on("error", (error: { message: string }) => {
-      console.error("Socket error:", error);
-      toastError(error.message)
+      toastError(error.message);
     });
     const handleReceiveMessage = (msg: any) => {
-      console.log("Received message:", msg);
       setMessages((prev) => [...prev, msg]);
     };
 
@@ -54,45 +61,82 @@ export default function Chat({ slug }: { slug?: string }) {
     };
   }, [socket.current, session]);
 
-
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    if (messagesData) {
+      setMessages(messagesData);
+    }
+  }, [messagesData]);
   return (
-    <div className="h-full w-full bg-white shadow-lg flex flex-col border border-gray-200">
-      <nav>
-        <div className="flex items-center justify-between p-4 border-b">
-          <h1 className="text-lg font-semibold cursor-pointer"><RxAvatar size={35} /></h1>
-          <span className="text-gray-500 cursor-pointer hover:text-gray-700"><RxDotsVertical size={25} /></span>
+    <div className="flex flex-col h-full bg-white dark:bg-gray-900">
+      <header className="flex items-center justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex items-center">
+          <Image
+            src={avatar}
+            alt="User Avatar"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
+          <div className="ml-4">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              {userProfile?.name || "Chat"}
+            </h2>
+            <div className="flex items-center gap-2">
+              <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {userProfile?.status ? "Online" : "unknown status"}
+              </p>
+            </div>
+          </div>
         </div>
-      </nav>
-      <div className="flex-1 overflow-auto">
-        <ul className="flex-1 p-4 pb-0 space-y-2">
+        <button className="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+          <MoreVertical className="w-6 h-6" />
+        </button>
+      </header>
+
+      <main className="flex-1 overflow-y-auto p-6">
+        <div className="space-y-6">
           {messages.map((message, index) => (
-            <li
+            <div
               key={index}
-              className={`flex ${message.hashId === session?.user.hashId ? "justify-end" : "justify-start"}`}
+              className={`flex items-start gap-4 ${message.hashId === session?.user.hashId ? "justify-end" : "justify-start"
+                }`}
             >
-              <span
-                className={`p-2 rounded-xl w-fit max-w-[70%] ${message.hashId === session?.user.hashId ? "bg-green-100" : "bg-blue-100"
+              {message.hashId !== session?.user.hashId && (
+                <Image
+                  src={avatar}
+                  alt="User Avatar"
+                  width={40}
+                  height={40}
+                  className="rounded-full"
+                />
+              )}
+              <div
+                className={`px-4 py-3 rounded-2xl max-w-lg ${message.hashId === session?.user.hashId
+                  ? "bg-green-600 text-white rounded-br-none"
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none shadow-sm"
                   }`}
               >
-                {message.text}
-              </span>
-            </li>
+                <p>{message.text}</p>
+              </div>
+            </div>
           ))}
-        </ul>
-        <div ref={messagesEndRef}>
         </div>
-      </div>
-      <Searchbox
-        setInput={setInput}
-        value={input}
-        handleSendMessage={handleSendMessage}
-        handleKeyDown={handleKeyDown}
-      />
-    </div >
+        <div ref={messagesEndRef} />
+      </main>
+
+      <footer className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <Searchbox
+          setInput={setInput}
+          value={input}
+          handleSendMessage={handleSendMessage}
+          handleKeyDown={handleKeyDown}
+        />
+      </footer>
+    </div>
   );
 }

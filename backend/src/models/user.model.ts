@@ -7,6 +7,7 @@ export interface IUser {
   email: string;
   password: string;
   status: boolean;
+  photo: string;
   hashId: string;
   createdAt: Date;
   updateAt: Date;
@@ -19,6 +20,7 @@ const UserSchema = new Schema<IUser>(
     email: String,
     status: Boolean,
     password: String,
+    photo: String,
     hashId: String,
     // And `Schema.Types.ObjectId` in the schema definition.
   },

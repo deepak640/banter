@@ -4,12 +4,14 @@ import React from 'react'
 import { LogOut, Search, Bell } from 'lucide-react';
 import Image from 'next/image';
 import avatar from "@/images/avtar.jpg";
+import { useUserById } from '@/services/user.service';
 
 const Header = () => {
 
   const { data: session } = useSession()
 
-  let user = session?.user
+  let _id = session?.user._id ?? ""
+  const { data: Profile } = useUserById(_id)
   const handleLogout = () => {
     signOut()
   }
@@ -18,7 +20,7 @@ const Header = () => {
       <div className="flex items-center">
         <div className="relative w-10 h-10">
           <Image
-            src={avatar}
+            src={Profile?.photo ?? avatar}
             alt="User Avatar"
             layout="fill"
             objectFit="cover"
@@ -26,7 +28,7 @@ const Header = () => {
           />
         </div>
         <div className="ml-4">
-          <h2 className="text-lg font-semibold text-green-900 dark:text-white">{user?.name}</h2>
+          <h2 className="text-lg font-semibold text-green-900 dark:text-white">{Profile?.name}</h2>
           <p className="text-sm text-green-500 dark:text-green-400">Welcome back!</p>
         </div>
       </div>

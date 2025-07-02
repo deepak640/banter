@@ -6,6 +6,16 @@ import { toastSuccess } from "@/utils/toast";
 
 let prifix = `${BASE_URL}/users`;
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  password?: string;
+  photo?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 const registerUser = async (obj: credentials) => {
   return axios.post(`${prifix}/register`, obj);
 };
@@ -19,6 +29,25 @@ const getAllUser = async (obj: any) => {
   return axios.get(`${prifix}?${query}`);
 };
 
+const updateById = async (id: string, obj: any) => {
+  return axios.patch(`${prifix}/${id}`, obj);
+};
+
+const getUserById = async (id: string) => {
+  const res = await axios.get<{ data: User }>(`${prifix}/${id}`);
+  return res.data;
+};
+
+// API Hooks
+export const useUpdateUser = (id: string) => {
+  return useMutation({
+    mutationFn: (obj: any) => updateById(id, obj),
+    onSuccess: () => {
+      toastSuccess("User updated successfully");
+    },
+  });
+};
+
 export const useGetAllUser = (obj: any) => {
   return useQuery({
     queryKey: ["user", obj],
@@ -29,5 +58,13 @@ export const useGetAllUser = (obj: any) => {
 export const useAddUser = () => {
   return useMutation({
     mutationFn: registerUser,
+  });
+};
+
+export const useUserById = (id: string) => {
+  return useQuery({
+    queryKey: ["user", id],
+    queryFn: () => getUserById(id).then((res) => res.data),
+    enabled: !!id, // Only run if id is truthy
   });
 };

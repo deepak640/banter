@@ -14,5 +14,5 @@ export default withAuth(
 
 // Apply middleware to all routes
 export const config = {
-  matcher: ["/"],
+  matcher: ["/(.*)"],
 };

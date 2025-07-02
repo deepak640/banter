@@ -4,6 +4,12 @@ import { comparePassword, encryptPassword } from "helpers/bcrypt";
 import { GenerateToken } from "helpers/jwt";
 import { generateUniqueCode } from "helpers/unqiueCode";
 import mongoose, { PipelineStage } from "mongoose";
+const { BlobServiceClient } = require("@azure/storage-blob");
+
+const blobServiceClient = BlobServiceClient.fromConnectionString(
+  process.env.AZURE_URI
+);
+const containerClient = blobServiceClient.getContainerClient("uploads"); // Replace with your container name
 
 export const RegisterUser = async (
   req: Request,
@@ -96,3 +102,60 @@ export const getAllUser = async (
   }
 };
 
+export const updateById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    let updateData = req.body;
+    if ((req as any).file) {
+      const photo = (req as any).file;
+      const blobName = `profile-${Date.now()}.jpg`;
+      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+      // Upload the file to Azure Blob Storage
+      await blockBlobClient.upload(photo.buffer, photo.size);
+      updateData.photo = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${containerClient.containerName}/${blobName}`;
+    }
+
+    console.log(updateData, "||new");
+    const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+    if (!updatedUser) {
+      res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: "User updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+export const getUserById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).lean();
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    res.status(200).json({
+      message: "User fetched successfully",
+      data: user,
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};

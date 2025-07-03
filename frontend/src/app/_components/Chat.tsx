@@ -4,7 +4,6 @@ import Searchbox from "@/app/_components/Searchbox";
 import { useSocket } from "@/Hooks/useSocket";
 import { Message } from "@/types/state";
 import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
 import { toastError } from "@/utils/toast";
 import Image from "next/image";
 import avatar from "@/images/avtar.jpg";

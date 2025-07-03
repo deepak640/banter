@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { ChevronLeft, MessageSquarePlus, Plus, Settings, Users } from 'lucide-react';
+import { ChevronLeft, MessageSquarePlus, Plus,  Users } from 'lucide-react';
 import Custommodal from './Custommodal';
 import StartChat from './StartChat';
 import { useGetConversations } from '@/services/conversation.service';

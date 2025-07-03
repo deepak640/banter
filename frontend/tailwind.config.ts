@@ -1,5 +1,7 @@
+// tailwind.config.ts
 import type { Config } from "tailwindcss";
-const plugin = require("tailwindcss/plugin");
+import plugin from "tailwindcss/plugin";
+import type { PluginAPI } from "tailwindcss/plugin";
 
 const config: Config = {
   darkMode: "class",
@@ -68,7 +70,7 @@ const config: Config = {
   },
   plugins: [
     require("tailwindcss-animate"),
-    plugin(function ({ addUtilities }) {
+    plugin(function ({ addUtilities }: PluginAPI) {
       addUtilities({
         ".app-bg": {
           backgroundColor: "#F0F2F5",

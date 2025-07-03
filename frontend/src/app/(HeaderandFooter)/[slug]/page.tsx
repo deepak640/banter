@@ -1,7 +1,9 @@
 import Chat from '@/app/_components/Chat'
 import React from 'react'
-import { PageProps } from 'next/dist/shared/lib/app-page-props';
-export default function Page({ params }: PageProps) {
+// types.ts (or directly in your file)
+
+
+export default function Page({ params }: any) {
   return (
     <Chat slug={params.slug} />
   )

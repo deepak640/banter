@@ -10,7 +10,7 @@ const Header = () => {
 
   const { data: session } = useSession()
 
-  let _id = session?.user._id ?? ""
+  const _id = session?.user._id ?? ""
   const { data: Profile } = useUserById(_id)
   const handleLogout = () => {
     signOut()

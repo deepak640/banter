@@ -1,9 +1,8 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { BASE_URL } from "./url.service";
-import { toastSuccess } from "@/utils/toast";
 
-let prifix = `${BASE_URL}/messages`;
+const prifix = `${BASE_URL}/messages`;
 
 const getMessages = async (conversationId: string) => {
   const res = await axios.get(`${prifix}/${conversationId}`);

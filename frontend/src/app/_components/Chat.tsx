@@ -23,7 +23,7 @@ export default function Chat({ slug }: { slug?: string }) {
   const { data: participants } = useGetprofileByConversationId(slug ?? "");
   const { data: messagesData } = useGetMessages(slug ?? "");
   console.log("||", messagesData);
-  let userProfile = participants?.find(
+  const userProfile = participants?.find(
     (participant: any) => participant._id !== session?.user._id
   );
   const handleSendMessage = () => {

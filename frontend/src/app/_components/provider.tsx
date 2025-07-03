@@ -7,12 +7,11 @@ import {
 import { Toaster } from "react-hot-toast";
 import { SessionProvider } from "next-auth/react";
 import { Session } from "next-auth";
-import Container from "./Container";
 
 export default function Provider({
   children,
   session
-}: Readonly<{ children: React.ReactNode; session: Session }>) {
+}: Readonly<{ children: React.ReactNode; session: Session | null | undefined }>) {
   const queryClient = new QueryClient()
   return (
     <QueryClientProvider client={queryClient}>

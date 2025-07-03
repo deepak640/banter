@@ -22,10 +22,10 @@ const geistMono = Geist_Mono({
 export default function RootLayout({
   children,
   session
-}: Readonly<{
+}:{
   children: React.ReactNode;
-  session: Session
-}>) {
+  session: Session | null | undefined;
+}) {
   return (
     <html lang="en">
       <body

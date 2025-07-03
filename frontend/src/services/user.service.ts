@@ -4,7 +4,7 @@ import { BASE_URL } from "./url.service";
 import { credentials } from "@/types/service";
 import { toastSuccess } from "@/utils/toast";
 
-let prifix = `${BASE_URL}/users`;
+const prifix = `${BASE_URL}/users`;
 
 interface User {
   _id: string;

@@ -3,6 +3,7 @@ import { useCreateConversation } from '@/services/conversation.service'
 import { toastError } from '@/utils/toast'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 const StartChat = ({ setOpen }: {
   setOpen: any
@@ -16,7 +17,7 @@ const StartChat = ({ setOpen }: {
   const { mutateAsync: createConversation } = useCreateConversation()
   const handleClick = async (userId: string) => {
     setOpen(false)
-    let Ids: string[] = [userId]
+    const Ids: string[] = [userId]
     Ids.push(session?.user?._id as string)
     try {
       const res = await createConversation({ users: Ids })
@@ -34,7 +35,7 @@ const StartChat = ({ setOpen }: {
         Allusers?.data?.map((user: any) => (
           <li key={user._id} className="p-2 border-1 my-1 rounded-sm hover:bg-gray-300 transition-colors cursor-pointer duration-150" onClick={() => handleClick(user._id)}>
             <div className='flex items-center'>
-              <img src={user.profilePic} alt="profile" className='w-10 h-10 rounded-full' />
+              <Image src={user.profilePic} alt="profile" className='w-10 h-10 rounded-full' />
               <div className='flex items-center flex-col'>
                 <span className='ml-4'>{user.name}</span>
                 <span className='text-sm'>{user.hashId}</span>

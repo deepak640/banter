@@ -1,16 +1,14 @@
 "use client"
 import { useAddUser, useUpdateUser } from "@/services/user.service"
 import { toastError, toastSuccess } from "@/utils/toast"
-import { useRouter } from "next/navigation"
+import Image from "next/image"
 import type React from "react"
-import { use, useState } from "react"
+import { useState } from "react"
 import { FiUser, FiMail, FiLock, FiUserPlus, FiEye, FiEyeOff } from "react-icons/fi"
 
-import { signIn } from "next-auth/react"
 
 export default function RegisterForm() {
 
-  const router = useRouter()
   const [step, setStep] = useState(1) // 1 for registration, 2 for profile pic
   const [profileImage, setProfileImage] = useState<File | null>(null)
   const [id, setId] = useState<string>("")
@@ -253,7 +251,7 @@ export default function RegisterForm() {
           <div className="flex justify-center items-center">
             <label htmlFor="profile-image" className="cursor-pointer">
               {profileImage ? (
-                <img
+                <Image
                   src={URL.createObjectURL(profileImage)}
                   alt="Profile Preview"
                   className="w-32 h-32 rounded-full object-cover border-4 border-blue-500 shadow-lg"

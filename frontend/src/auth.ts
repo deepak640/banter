@@ -21,7 +21,7 @@ const authOptions: AuthOptions = {
 
         try {
           if (credentials?.email && credentials?.password) {
-            let obj = {
+            const obj = {
               email: credentials.email,
               password: credentials.password,
             };
@@ -49,7 +49,7 @@ const authOptions: AuthOptions = {
     error: "/login", // Error code passed in query string as ?error=
   },
   callbacks: {
-    async jwt({ token, user, account, profile }: any) {
+    async jwt({ token, user }: any) {
       if (user) {
         token.token = user.token;
         token.hashId = user.hashId;

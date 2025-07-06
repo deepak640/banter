@@ -13,7 +13,7 @@ const Authform = () => {
       <div className="flex flex-col justify-center w-5/12 max-w-md p-8 mx-auto rounded-xl">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-800">ChatApp</h1>
-          <p className="mt-2 text-gray-600">Connect with friends in real-time</p>
+          <p className="mt-2 text-gray-600">Connect with friends</p>
         </div>
 
         <div className="flex mb-6 bg-gray-100 rounded-lg p-1">

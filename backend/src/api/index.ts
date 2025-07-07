@@ -1,4 +1,4 @@
-import app from "../dist/server.js"; // compiled JS file
+import app from "../../dist/server.js"; // compiled JS file
 import { createServer } from "http";
 
 export default function handler(req, res) {

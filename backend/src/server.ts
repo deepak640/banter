@@ -164,4 +164,4 @@ httpServer.listen(PORT, () => {
   console.log(`Server running on port ${PORT} with Socket.IO support`);
 });
 
-module.exports = app;
+export default app; // Export the Express app for use in other modules

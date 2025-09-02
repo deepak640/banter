@@ -1,7 +1,6 @@
 "use client"
 import { useAddUser, useUpdateUser } from "@/services/user.service"
 import { toastError, toastSuccess } from "@/utils/toast"
-import Image from "next/image"
 import type React from "react"
 import { useState } from "react"
 import { FiUser, FiMail, FiLock, FiUserPlus, FiEye, FiEyeOff } from "react-icons/fi"

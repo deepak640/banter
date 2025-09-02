@@ -4,7 +4,6 @@ import { toastError, toastSuccess } from "@/utils/toast"
 import type React from "react"
 import { useState } from "react"
 import { FiUser, FiMail, FiLock, FiUserPlus, FiEye, FiEyeOff } from "react-icons/fi"
-import { useRouter } from "next/navigation"
 
 
 export default function RegisterForm() {
@@ -97,8 +96,6 @@ export default function RegisterForm() {
           const form = new FormData()
           form.append("file", profileImage)
           await updateUser(form)
-          const router = useRouter()
-          router.push("/auth?type=login")
         }
       } catch (error: any) {
         toastError(error.response?.data?.message || "An error occurred during profile update.")

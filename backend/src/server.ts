@@ -160,8 +160,8 @@ io.on("connection", async (socket: Socket) => {
 // Join a room with conversationId
 
 // Start server with HTTP server instead of Express
-// httpServer.listen(PORT, () => {
-//   console.log(`Server running on port ${PORT} with Socket.IO support`);
-// });
+httpServer.listen(PORT, () => {
+  console.log(`Server running on port ${PORT} with Socket.IO support`);
+});
 
 export default app; // Export the Express app for use in other modules

@@ -3,26 +3,31 @@ import React, { useEffect, useState } from "react";
 import Searchbox from "@/app/_components/Searchbox";
 import { useSocket } from "@/Hooks/useSocket";
 import { Message } from "@/types/state";
-import { useSession } from "next-auth/react";
 import { toastError } from "@/utils/toast";
 import Image from "next/image";
 import avatar from "@/images/avtar.jpg";
 import { MoreVertical } from "lucide-react";
 import { useGetprofileByConversationId } from "@/services/conversation.service";
 import { useGetMessages } from "@/services/message.service";
+import { useCustomSession } from "@/Hooks/useCustomSession";
 
 export default function Chat({ slug }: { slug?: string }) {
-  const { data: session } = useSession();
+  const { session } = useCustomSession();
   const socket = useSocket({ userId: session?.user?._id ?? "", conversationId: slug ?? "" });
-
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
 
   // API
   const { data: participants } = useGetprofileByConversationId(slug ?? "");
-  const { data: messagesData } = useGetMessages(slug ?? "");
-  console.log("||", messagesData);
+  const { data: messagesData, isLoading } = useGetMessages(slug ?? "");
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    if (messagesData) {
+      setMessages(messagesData);
+    }
+  }, [messagesData]);
+
   const userProfile = participants?.find(
     (participant: any) => participant._id !== session?.user._id
   );
@@ -64,11 +69,10 @@ export default function Chat({ slug }: { slug?: string }) {
     scrollToBottom();
   }, [messages]);
 
-  useEffect(() => {
-    if (messagesData) {
-      setMessages(messagesData);
-    }
-  }, [messagesData]);
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="flex flex-col h-full bg-white dark:bg-gray-900">
       <header className="flex items-center justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">

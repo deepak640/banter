@@ -7,12 +7,12 @@ export default withAuth(
   },
   {
     pages: {
-      signIn: "/auth",
+      signIn: "/login",
     },
   }
 );
 
 // Apply middleware to all routes
 export const config = {
-  matcher: ["/(.*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|login|register).*)"],
 };

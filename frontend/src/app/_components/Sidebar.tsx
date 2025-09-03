@@ -15,6 +15,9 @@ const Sidebar = () => {
 
   const { data: session } = useSession();
   const userId = session?.user?._id;
+  console.log("🚀 -----------------------------🚀")
+  console.log("🚀 ~ Sidebar ~ userId:", session)
+  console.log("🚀 -----------------------------🚀")
 
   const { data: conversations } = useGetConversations(userId || "");
 

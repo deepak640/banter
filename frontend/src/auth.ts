@@ -1,7 +1,6 @@
 import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 // import { verifyOtp } from "./services/user.service";
-import { jwtDecode } from "jwt-decode";
 import { loginUser } from "./services/user.service";
 
 export interface customSession {
@@ -26,14 +25,10 @@ const authOptions: AuthOptions = {
               password: credentials.password,
             };
             const { data } = await loginUser(obj);
-            return {
-              id: data.user._id, // Ensure the 'id' field is included
-              token: data.token,
-            };
+            return { user: data.user, token: data.token };
           }
           return null; // Return null if invalid
         } catch (error: any) {
-          console.error(error);
           throw new Error(
             error?.response?.data?.message || "Invalid credentials"
           );
@@ -49,20 +44,16 @@ const authOptions: AuthOptions = {
     error: "/login", // Error code passed in query string as ?error=
   },
   callbacks: {
-    async jwt({ token, user }: any) {
-      if (user) {
-        token.token = user.token;
-        token.hashId = user.hashId;
+    async jwt({ token, user, account }: any) {
+      if (user && account) {
+        token.user = user.user;
+        token.accessToken = user.token;
       }
-      console.log("jwt", token);
       return token;
     },
-    async session({ session, token }: customSession) {
-      session = {
-        ...session,
-        user: jwtDecode(token.token),
-        hashId: token.hashId,
-      };
+    async session({ session, token }: any) {
+      session.user = token.user;
+      session.accessToken = token.accessToken;
       return session;
     },
   },

@@ -44,6 +44,7 @@ const authOptions: AuthOptions = {
       },
     }),
   ],
+  debug: true,
   session: {
     strategy: "jwt",
   },

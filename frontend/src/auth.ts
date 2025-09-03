@@ -25,7 +25,15 @@ const authOptions: AuthOptions = {
               password: credentials.password,
             };
             const { data } = await loginUser(obj);
-            return { user: data.user, token: data.token };
+            // Ensure the returned object matches the User type
+            return {
+              id: data.user.id,
+              name: data.user.name,
+              email: data.user.email,
+              image: data.user.image,
+              token: data.token, // custom property for later use in jwt callback
+              user: data.user    // custom property for later use in jwt callback
+            };
           }
           return null; // Return null if invalid
         } catch (error: any) {

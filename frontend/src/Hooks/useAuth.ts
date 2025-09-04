@@ -23,7 +23,7 @@ export function useAuth() {
         const decodedToken = jwtDecode<DecodedToken>(token);
         console.log("decodedToken", decodedToken);
         if (decodedToken.exp * 1000 > Date.now()) {
-          let token = { _id: decodedToken._id, hashId: decodedToken.hashId };
+          const token = { _id: decodedToken._id, hashId: decodedToken.hashId };
           setUser(token);
           setIsAuthenticated(true);
         } else {

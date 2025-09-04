@@ -60,7 +60,7 @@ const Sidebar = () => {
                   >
                     <div className="relative">
                       <Image
-                        src={conversation.userProfile}
+                        src={conversation.userProfile??avatar}
                         alt="User Avatar"
                         width={48}
                         height={48}

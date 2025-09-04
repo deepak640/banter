@@ -12,7 +12,7 @@ import { useGetMessages } from "../../services/message.service";
 import { useAuth } from "../../Hooks/useAuth";
 
 export default function Chat({ slug }: { slug?: string }) {
-  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const { user} = useAuth();
   const socket = useSocket({ userId: user?._id ?? "", conversationId: slug ?? "" });
   const [input, setInput] = useState("");
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);

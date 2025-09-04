@@ -1,7 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import Container from "@/app/_components/Container";
-import { getServerSession } from "next-auth";
 import React, { ReactNode } from "react";
 
 const geistSans = Geist({

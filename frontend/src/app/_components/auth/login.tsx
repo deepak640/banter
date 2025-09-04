@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
 import { FiMail, FiLock, FiLogIn, FiEye, FiEyeOff } from "react-icons/fi";
-import { loginUser, useLoginUser } from "../../../services/user.service";
+import {  useLoginUser } from "../../../services/user.service";
 import { setToken } from "../../../utils/auth";
 
 export default function LoginForm() {

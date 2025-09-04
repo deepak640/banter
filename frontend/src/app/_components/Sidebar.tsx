@@ -64,7 +64,7 @@ const Sidebar = () => {
                         alt="User Avatar"
                         width={48}
                         height={48}
-                        className="rounded-full"
+                        className="rounded-full contain-size"
                       />
                       <span className="absolute bottom-0 right-0 block h-3 w-3 rounded-full bg-green-500 border-2 border-white dark:border-green-900" />
                     </div>

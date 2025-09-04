@@ -13,6 +13,7 @@ import { useAuth } from "../../Hooks/useAuth";
 
 export default function Chat({ slug }: { slug?: string }) {
   const { user} = useAuth();
+  console.log(user,slug,"sluguser");
   const socket = useSocket({ userId: user?._id ?? "", conversationId: slug ?? "" });
   const [input, setInput] = useState("");
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
@@ -29,7 +30,7 @@ export default function Chat({ slug }: { slug?: string }) {
   }, [messagesData]);
 
   const userProfile = participants?.find(
-    (participant: any) => participant._id !== user._id
+    (participant: any) => participant._id !== user?._id
   );
   const handleSendMessage = () => {
     if (input.trim() && socket.current) {

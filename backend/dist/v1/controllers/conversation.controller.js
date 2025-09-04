@@ -63,6 +63,7 @@ const getConversations = (req, res, next) => __awaiter(void 0, void 0, void 0, f
                         _id: 1,
                         name: 1,
                         profile: 1,
+                        photo: 1,
                     },
                 },
             ],
@@ -80,12 +81,13 @@ const getConversations = (req, res, next) => __awaiter(void 0, void 0, void 0, f
             userProfile: {
                 $cond: [
                     { $eq: ["$isGroup", false] },
-                    { $arrayElemAt: ["$otherUsers.profile", 0] },
+                    { $arrayElemAt: ["$otherUsers.photo", 0] },
                     null,
                 ],
             },
         },
     });
+    console.log("Pipeline:", JSON.stringify(pipeline, null, 2));
     const conversations = yield conversation_model_1.Conversation.aggregate(pipeline).exec();
     res.json({
         conversations: conversations,

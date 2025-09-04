@@ -1,7 +1,7 @@
-import { useGetAllUser } from '@/services/user.service'
-import { useCreateConversation } from '@/services/conversation.service'
-import { toastError } from '@/utils/toast'
-import { useSession } from 'next-auth/react'
+import { useGetAllUser } from '../../services/user.service'
+import { useCreateConversation } from '../../services/conversation.service'
+import { toastError } from '../../utils/toast'
+import { useAuth } from '../../Hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 
@@ -12,13 +12,13 @@ const StartChat = ({ setOpen }: {
 
 
   // API
-  const { data: session } = useSession();
-  const { data: Allusers } = useGetAllUser({ userId: session?.user?._id })
+  const { user } = useAuth();
+  const { data: Allusers } = useGetAllUser({ userId: user?._id })
   const { mutateAsync: createConversation } = useCreateConversation()
   const handleClick = async (userId: string) => {
     setOpen(false)
     const Ids: string[] = [userId]
-    Ids.push(session?.user?._id as string)
+    Ids.push(user?._id as string)
     try {
       const res = await createConversation({ users: Ids })
       if (res) {

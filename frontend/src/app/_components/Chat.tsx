@@ -1,19 +1,19 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Searchbox from "@/app/_components/Searchbox";
-import { useSocket } from "@/Hooks/useSocket";
-import { Message } from "@/types/state";
-import { toastError } from "@/utils/toast";
+import Searchbox from "./Searchbox";
+import { useSocket } from "../../Hooks/useSocket";
+import { Message } from "../../types/state";
+import { toastError } from "../../utils/toast";
 import Image from "next/image";
-import avatar from "@/images/avtar.jpg";
+import avatar from "../../images/avtar.jpg";
 import { MoreVertical } from "lucide-react";
-import { useGetprofileByConversationId } from "@/services/conversation.service";
-import { useGetMessages } from "@/services/message.service";
-import { useCustomSession } from "@/Hooks/useCustomSession";
+import { useGetprofileByConversationId } from "../../services/conversation.service";
+import { useGetMessages } from "../../services/message.service";
+import { useAuth } from "../../Hooks/useAuth";
 
 export default function Chat({ slug }: { slug?: string }) {
-  const { session } = useCustomSession();
-  const socket = useSocket({ userId: session?.user?._id ?? "", conversationId: slug ?? "" });
+  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const socket = useSocket({ userId: user?._id ?? "", conversationId: slug ?? "" });
   const [input, setInput] = useState("");
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -29,11 +29,11 @@ export default function Chat({ slug }: { slug?: string }) {
   }, [messagesData]);
 
   const userProfile = participants?.find(
-    (participant: any) => participant._id !== session?.user._id
+    (participant: any) => participant._id !== user._id
   );
   const handleSendMessage = () => {
     if (input.trim() && socket.current) {
-      const message = { text: input, hashId: session?.user.hashId, conversationId: slug };
+      const message = { text: input, hashId: user.hashId, conversationId: slug };
       socket.current.emit("send-message", message);
       setInput("");
     }
@@ -63,7 +63,7 @@ export default function Chat({ slug }: { slug?: string }) {
     return () => {
       socket.current?.off("receive-message", handleReceiveMessage);
     };
-  }, [socket.current, session]);
+  }, [socket.current, user]);
 
   useEffect(() => {
     scrollToBottom();
@@ -89,9 +89,9 @@ export default function Chat({ slug }: { slug?: string }) {
               {userProfile?.name || "Chat"}
             </h2>
             <div className="flex items-center gap-2">
-              <span className="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+              <span className={`inline-block w-2 h-2 ${userProfile?.status ? "bg-green-500" : "bg-gray-400"} rounded-full`}></span>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {userProfile?.status ? "Online" : "unknown status"}
+                {userProfile?.status ? "Online" : "Offline"}
               </p>
             </div>
           </div>
@@ -106,10 +106,8 @@ export default function Chat({ slug }: { slug?: string }) {
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`flex items-start gap-4 ${message.hashId === session?.user.hashId ? "justify-end" : "justify-start"
-                }`}
-            >
-              {message.hashId !== session?.user.hashId && (
+              className={`flex items-start gap-4 ${message.hashId === user.hashId ? "justify-end" : "justify-start"}`}>
+              {message.hashId !== user.hashId && (
                 <Image
                   src={avatar}
                   alt="User Avatar"
@@ -119,11 +117,9 @@ export default function Chat({ slug }: { slug?: string }) {
                 />
               )}
               <div
-                className={`px-4 py-3 rounded-2xl max-w-lg ${message.hashId === session?.user.hashId
+                className={`px-4 py-3 rounded-2xl max-w-lg ${message.hashId === user.hashId
                   ? "bg-green-600 text-white rounded-br-none"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none shadow-sm"
-                  }`}
-              >
+                  : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none shadow-sm"}`}>
                 <p>{message.text}</p>
               </div>
             </div>

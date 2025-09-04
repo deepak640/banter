@@ -57,6 +57,7 @@ const loginUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function
         }
         JWTtoken = yield (0, jwt_1.GenerateToken)(Existuser);
         res.status(200).json({
+            success: true,
             user: {
                 _id: Existuser._id,
                 hashId: Existuser.hashId,

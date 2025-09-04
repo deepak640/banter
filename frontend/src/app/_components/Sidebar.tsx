@@ -4,7 +4,7 @@ import { ChevronLeft, MessageSquarePlus, Plus,  Users } from 'lucide-react';
 import Custommodal from './Custommodal';
 import StartChat from './StartChat';
 import { useGetConversations } from '@/services/conversation.service';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/Hooks/useAuth';
 import Image from 'next/image';
 import avatar from "@/images/avtar.jpg";
 import Link from 'next/link';
@@ -13,14 +13,10 @@ const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [openModal, setOpenModal] = useState(false);
 
-  const { data: session } = useSession();
-  const userId = session?.user?._id;
-  console.log("🚀 -----------------------------🚀")
-  console.log("🚀 ~ Sidebar ~ userId:", session)
-  console.log("🚀 -----------------------------🚀")
-
+  const { user } = useAuth();
+  const userId = user?._id;
+  console.log("userId", user);
   const { data: conversations } = useGetConversations(userId || "");
-
   const handleOpenModal = () => {
     setOpenModal(true);
   };
@@ -28,7 +24,7 @@ const Sidebar = () => {
   return (
     <aside
       className={`flex flex-col h-full bg-green-50 dark:bg-green-900 border-r border-green-200 dark:border-green-800 transition-all duration-300 ease-in-out ${
-        isOpen ? 'w-80' : 'w-24'
+        isOpen ? "w-80" : "w-24"
       }`}
     >
       <div className="flex items-center justify-between h-20 px-6 border-b border-green-200 dark:border-green-800">
@@ -40,9 +36,13 @@ const Sidebar = () => {
         <button
           onClick={() => setIsOpen((prev) => !prev)}
           className="p-2 rounded-full text-green-500 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-700 transition-colors duration-200"
-          title={isOpen ? 'Collapse Sidebar' : 'Expand Sidebar'}
+          title={isOpen ? "Collapse Sidebar" : "Expand Sidebar"}
         >
-          <ChevronLeft className={`w-6 h-6 transition-transform duration-300 ${isOpen ? '' : 'rotate-180'}`} />
+          <ChevronLeft
+            className={`w-6 h-6 transition-transform duration-300 ${
+              isOpen ? "" : "rotate-180"
+            }`}
+          />
         </button>
       </div>
 
@@ -55,12 +55,12 @@ const Sidebar = () => {
                   <Link
                     href={`/${conversation._id}`}
                     className={`flex items-center p-3 rounded-xl hover:bg-green-200 dark:hover:bg-green-800 transition-colors duration-200 ${
-                      isOpen ? '' : 'justify-center'
+                      isOpen ? "" : "justify-center"
                     }`}
                   >
                     <div className="relative">
                       <Image
-                        src={avatar}
+                        src={conversation.userProfile}
                         alt="User Avatar"
                         width={48}
                         height={48}
@@ -71,7 +71,7 @@ const Sidebar = () => {
                     {isOpen && (
                       <div className="ml-4">
                         <p className="font-semibold text-green-900 dark:text-white">
-                          {conversation.userName || 'Untitled Chat'}
+                          {conversation.userName || "Untitled Chat"}
                         </p>
                         <p className="text-sm text-green-500 dark:text-green-400">
                           Hey, how are you?

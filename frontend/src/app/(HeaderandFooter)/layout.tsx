@@ -2,7 +2,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
 import Container from "@/app/_components/Container";
 import { getServerSession } from "next-auth";
-import authOptions from "@/auth";
 import React, { ReactNode } from "react";
 
 const geistSans = Geist({
@@ -20,18 +19,12 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
-
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Container>
-          {typeof children === "function"
-            ? (children as (props: { session: any }) => React.ReactNode)({ session })
-            : children}
-        </Container>
+        <Container>{children}</Container>
       </body>
     </html>
   );

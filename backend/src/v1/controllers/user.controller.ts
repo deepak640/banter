@@ -62,6 +62,7 @@ export const loginUser = async (
     JWTtoken = await GenerateToken(Existuser);
 
     res.status(200).json({
+      success:true,
       user: {
         _id: Existuser._id,
         hashId: Existuser.hashId,

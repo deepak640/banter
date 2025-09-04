@@ -1,20 +1,25 @@
 "use client"
-import { signOut, useSession } from 'next-auth/react'
 import React from 'react'
 import { LogOut, Search, Bell } from 'lucide-react';
 import Image from 'next/image';
-import avatar from "@/images/avtar.jpg";
-import { useUserById } from '@/services/user.service';
+import avatar from "../../images/avtar.jpg";
+import { useUserById } from '../../services/user.service';
+import { useAuth } from '../../Hooks/useAuth';
+import { removeToken } from '../../utils/auth';
+import { useRouter } from 'next/navigation';
 
 const Header = () => {
+  const { user } = useAuth();
+  const router = useRouter();
 
-  const { data: session } = useSession()
+  const _id = user?._id ?? "";
+  const { data: Profile } = useUserById(_id);
 
-  const _id = session?.user._id ?? ""
-  const { data: Profile } = useUserById(_id)
   const handleLogout = () => {
-    signOut()
-  }
+    removeToken();
+    router.push('/login');
+  };
+
   return (
     <header className="flex items-center justify-between h-20 px-6 bg-green-50 dark:bg-green-900 border-b border-green-200 dark:border-green-800">
       <div className="flex items-center">

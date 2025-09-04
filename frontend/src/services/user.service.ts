@@ -1,8 +1,9 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { BASE_URL } from "./url.service";
 import { credentials } from "@/types/service";
 import { toastSuccess } from "@/utils/toast";
+import { LoginResponseData } from "@/types/auth";
 
 const prifix = `${BASE_URL}/users`;
 
@@ -20,17 +21,17 @@ const registerUser = async (obj: credentials) => {
   return axios.post(`${prifix}/register`, obj);
 };
 
-export const loginUser = async (obj: credentials) => {
-  return axios.post(`${prifix}/login`, obj);
+export const loginUser = async (obj: credentials): Promise<AxiosResponse<LoginResponseData>> => {
+  return await axios.post(`${prifix}/login`, obj);
 };
 
 const getAllUser = async (obj: any) => {
   const query = new URLSearchParams(obj).toString();
-  return axios.get(`${prifix}?${query}`);
+  return await axios.get(`${prifix}?${query}`);
 };
 
 const updateById = async (id: string, obj: any) => {
-  return axios.patch(`${prifix}/${id}`, obj);
+  return await axios.patch(`${prifix}/${id}`, obj);
 };
 
 const getUserById = async (id: string) => {
@@ -66,5 +67,11 @@ export const useUserById = (id: string) => {
     queryKey: ["user", id],
     queryFn: () => getUserById(id).then((res) => res.data),
     enabled: !!id, // Only run if id is truthy
+  });
+};
+
+export const useLoginUser = () => {
+  return useMutation({
+    mutationFn: loginUser,
   });
 };

@@ -40,7 +40,6 @@ export default function LoginForm() {
       }
     } catch (error: any) {
       toastError(error.message);
-      console.error("Login failed:", error);
     }
   };
 

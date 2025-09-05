@@ -15,12 +15,10 @@ const Sidebar = () => {
 
   const { user } = useAuth();
   const userId = user?._id;
-  console.log("userId", user);
   const { data: conversations } = useGetConversations(userId || "");
   const handleOpenModal = () => {
     setOpenModal(true);
   };
-
   return (
     <aside
       className={`flex flex-col h-full bg-green-50 dark:bg-green-900 border-r border-green-200 dark:border-green-800 transition-all duration-300 ease-in-out ${

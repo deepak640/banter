@@ -17,11 +17,9 @@ export function useAuth() {
 
   useEffect(() => {
     const token = getToken();
-    console.log("token", token);
     if (token) {
       try {
         const decodedToken = jwtDecode<DecodedToken>(token);
-        console.log("decodedToken", decodedToken);
         if (decodedToken.exp * 1000 > Date.now()) {
           const token = { _id: decodedToken._id, hashId: decodedToken.hashId };
           setUser(token);
@@ -32,7 +30,6 @@ export function useAuth() {
           setIsAuthenticated(false);
         }
       } catch (error) {
-        console.error("Invalid token", error);
         setUser(null);
         setIsAuthenticated(false);
       }

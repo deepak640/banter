@@ -13,7 +13,7 @@ const Header = () => {
   const router = useRouter();
 
   const _id = user?._id ?? "";
-  const { data: Profile } = useUserById(_id);
+  const { data: Profile } = useUserById(_id??"");
 
   const handleLogout = () => {
     removeToken();

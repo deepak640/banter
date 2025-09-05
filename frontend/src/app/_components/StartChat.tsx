@@ -26,7 +26,6 @@ const StartChat = ({ setOpen }: {
       }
     } catch (error) {
       toastError("Something went wrong")
-      console.error(error)
     }
   }
   return (

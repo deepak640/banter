@@ -9,7 +9,6 @@ export const decodeToken = (token: string) => {
 };
 
 export const setJwt = (val: string) => {
-  // console.log(val, "setJwt");
   if (window && typeof window !== "undefined") {
     const token = window.localStorage.setItem(AUTH_TOKEN, val);
     return token;

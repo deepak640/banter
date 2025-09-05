@@ -30,6 +30,7 @@ export function useAuth() {
           setIsAuthenticated(false);
         }
       } catch (error) {
+        console.log("Error decoding token:", error);
         setUser(null);
         setIsAuthenticated(false);
       }

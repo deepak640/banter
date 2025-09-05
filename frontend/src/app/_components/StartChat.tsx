@@ -25,6 +25,7 @@ const StartChat = ({ setOpen }: {
         router.push(`/${res.id}`)
       }
     } catch (error) {
+      console.log("Error creating conversation:", error);
       toastError("Something went wrong")
     }
   }

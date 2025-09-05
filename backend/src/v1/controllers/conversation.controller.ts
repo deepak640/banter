@@ -127,7 +127,7 @@ export const getprofileByConversationId = async (
           participants: {
             _id: 1,
             name: 1,
-            profile: 1,
+            photo: 1,
             status: 1,
           },
         },

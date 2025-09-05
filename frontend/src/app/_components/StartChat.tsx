@@ -14,6 +14,9 @@ const StartChat = ({ setOpen }: {
   // API
   const { user } = useAuth();
   const { data: Allusers } = useGetAllUser({ userId: user?._id })
+  console.log("🚀 -----------------------------------🚀")
+  console.log("🚀 ~ StartChat ~ Allusers:", Allusers)
+  console.log("🚀 -----------------------------------🚀")
   const { mutateAsync: createConversation } = useCreateConversation()
   const handleClick = async (userId: string) => {
     setOpen(false)
@@ -35,7 +38,14 @@ const StartChat = ({ setOpen }: {
         Allusers?.data?.map((user: any) => (
           <li key={user._id} className="p-2 border-1 my-1 rounded-sm hover:bg-gray-300 transition-colors cursor-pointer duration-150" onClick={() => handleClick(user._id)}>
             <div className='flex items-center'>
-              <Image src={user.profilePic} alt="profile" className='w-10 h-10 rounded-full' />
+              <Image
+                src={user.photo || '/default-profile.png'}
+                alt="profile"
+                className='w-10 h-10 rounded-full'
+                width={40}
+                height={40}
+                unoptimized
+              />
               <div className='flex items-center flex-col'>
                 <span className='ml-4'>{user.name}</span>
                 <span className='text-sm'>{user.hashId}</span>

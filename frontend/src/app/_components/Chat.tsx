@@ -31,6 +31,7 @@ export default function Chat({ slug }: { slug?: string }) {
   const userProfile = participants?.find(
     (participant: any) => participant._id !== user?._id
   );
+
   const handleSendMessage = () => {
     if (input.trim() && socket.current) {
       const message = { text: input, hashId: user.hashId, conversationId: slug };
@@ -78,11 +79,11 @@ export default function Chat({ slug }: { slug?: string }) {
       <header className="flex items-center justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center">
           <Image
-            src={avatar}
+            src={userProfile.photo??avatar}
             alt="User Avatar"
             width={40}
             height={40}
-            className="rounded-full"
+            className="rounded-full contain-size"
           />
           <div className="ml-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">

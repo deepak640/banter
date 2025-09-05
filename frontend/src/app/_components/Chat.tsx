@@ -11,8 +11,10 @@ import { useGetprofileByConversationId } from "../../services/conversation.servi
 import { useGetMessages } from "../../services/message.service";
 import { useAuth } from "../../Hooks/useAuth";
 
+import Loader from "./Loader";
+
 export default function Chat({ slug }: { slug?: string }) {
-  const { user} = useAuth();
+  const { user } = useAuth();
   const socket = useSocket({ userId: user?._id ?? "", conversationId: slug ?? "" });
   const [input, setInput] = useState("");
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
@@ -71,7 +73,11 @@ export default function Chat({ slug }: { slug?: string }) {
   }, [messages]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Loader />
+      </div>
+    );
   }
 
   return (
@@ -79,7 +85,7 @@ export default function Chat({ slug }: { slug?: string }) {
       <header className="flex items-center justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center">
           <Image
-            src={userProfile.photo??avatar}
+            src={userProfile?.photo ?? avatar}
             alt="User Avatar"
             width={40}
             height={40}

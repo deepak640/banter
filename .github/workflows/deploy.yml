@@ -19,7 +19,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '24'
-          cache: 'npm'
+          # cache: 'npm'
+          # cache-dependency-path: '**/package-lock.json' # ignore if not found
 
       # 3. Add SSH key
       - name: Setup SSH

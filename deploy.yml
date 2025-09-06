@@ -32,7 +32,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
             set -e
-            cd ~/banter  # your project folder on VM
+            cd ~/banter/frontend  # your project folder on VM
 
             echo ">>> Pulling latest changes..."
             git fetch origin main

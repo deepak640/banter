@@ -6,8 +6,8 @@ const mongoose_1 = require("mongoose");
 const UserSchema = new mongoose_1.Schema({
     name: String,
     email: String,
-    status: Boolean,
     password: String,
+    lastActive: Date,
     photo: String,
     hashId: String,
     // And `Schema.Types.ObjectId` in the schema definition.

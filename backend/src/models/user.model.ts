@@ -6,8 +6,8 @@ export interface IUser {
   name: string;
   email: string;
   password: string;
-  status: boolean;
   photo: string;
+  lastActive: Date;
   hashId: string;
   createdAt: Date;
   updateAt: Date;
@@ -18,8 +18,8 @@ const UserSchema = new Schema<IUser>(
   {
     name: String,
     email: String,
-    status: Boolean,
     password: String,
+    lastActive: Date,
     photo: String,
     hashId: String,
     // And `Schema.Types.ObjectId` in the schema definition.

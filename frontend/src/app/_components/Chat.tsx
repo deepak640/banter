@@ -10,20 +10,28 @@ import { MoreVertical } from "lucide-react";
 import { useGetprofileByConversationId } from "../../services/conversation.service";
 import { useGetMessages } from "../../services/message.service";
 import { useAuth } from "../../Hooks/useAuth";
-
 import Loader from "./Loader";
+import moment from "moment";
 
 export default function Chat({ slug }: { slug?: string }) {
   const { user } = useAuth();
-  const socket = useSocket({ userId: user?._id ?? "", conversationId: slug ?? "" });
+  const socket = useSocket({
+    userId: user?._id ?? "",
+    conversationId: slug ?? "",
+  });
   const [input, setInput] = useState("");
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
 
-  // API
-  const { data: participants } = useGetprofileByConversationId(slug ?? "");
-  const { data: messagesData, isLoading } = useGetMessages(slug ?? "");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [userStatus, setUserStatus] = useState(false);
+  const [peerProfile, setPeerProfile] = useState<any>(null);
 
+  // API
+  const { data: participants } = useGetprofileByConversationId(
+    slug ?? "",
+    userStatus
+  );
+  const { data: messagesData, isLoading } = useGetMessages(slug ?? "");
   useEffect(() => {
     if (messagesData) {
       setMessages(messagesData);
@@ -34,9 +42,19 @@ export default function Chat({ slug }: { slug?: string }) {
     (participant: any) => participant._id !== user?._id
   );
 
+  useEffect(() => {
+    if (userProfile) {
+      setPeerProfile(userProfile);
+    }
+  }, [userProfile]);
+
   const handleSendMessage = () => {
     if (input.trim() && socket.current) {
-      const message = { text: input, hashId: user.hashId, conversationId: slug };
+      const message = {
+        text: input,
+        hashId: user.hashId,
+        conversationId: slug,
+      };
       socket.current.emit("send-message", message);
       setInput("");
     }
@@ -53,20 +71,43 @@ export default function Chat({ slug }: { slug?: string }) {
   };
 
   useEffect(() => {
-    if (!socket.current) return;
-    socket.current.on("error", (error: { message: string }) => {
+    if (!socket.current || !peerProfile) return;
+
+    const handleUserStatus = ({
+      userId,
+      status,
+      lastActive,
+    }: {
+      userId: string;
+      status: boolean;
+      lastActive?: Date;
+    }) => {
+      if (userId === peerProfile._id) {
+        setUserStatus(status);
+        if (!status && lastActive) {
+          setPeerProfile((prev: any) => ({ ...prev, lastActive }));
+        }
+      }
+    };
+
+    const handleError = (error: { message: string }) => {
       toastError(error.message);
-    });
+    };
+
     const handleReceiveMessage = (msg: any) => {
       setMessages((prev) => [...prev, msg]);
     };
 
+    socket.current.on("user-status", handleUserStatus);
+    socket.current.on("error", handleError);
     socket.current.on("receive-message", handleReceiveMessage);
 
     return () => {
+      socket.current?.off("user-status", handleUserStatus);
+      socket.current?.off("error", handleError);
       socket.current?.off("receive-message", handleReceiveMessage);
     };
-  }, [socket.current, user]);
+  }, [socket, user, peerProfile]);
 
   useEffect(() => {
     scrollToBottom();
@@ -85,7 +126,7 @@ export default function Chat({ slug }: { slug?: string }) {
       <header className="flex items-center justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center">
           <Image
-            src={userProfile?.photo ?? avatar}
+            src={peerProfile?.photo ?? avatar}
             alt="User Avatar"
             width={40}
             height={40}
@@ -93,12 +134,20 @@ export default function Chat({ slug }: { slug?: string }) {
           />
           <div className="ml-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {userProfile?.name || "Chat"}
+              {peerProfile?.name || "Chat"}
             </h2>
             <div className="flex items-center gap-2">
-              <span className={`inline-block w-2 h-2 ${userProfile?.status ? "bg-green-500" : "bg-gray-400"} rounded-full`}></span>
+              <span
+                className={`inline-block w-2 h-2 ${
+                  userStatus ? "bg-green-500" : "bg-gray-400"
+                } rounded-full`}
+              ></span>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {userProfile?.status ? "Online" : "Offline"}
+                {userStatus
+                  ? "Online"
+                  : peerProfile?.lastActive
+                  ? moment(peerProfile.lastActive).fromNow()
+                  : "Offline"}
               </p>
             </div>
           </div>
@@ -113,7 +162,10 @@ export default function Chat({ slug }: { slug?: string }) {
           {messages.map((message, index) => (
             <div
               key={index}
-              className={`flex items-start gap-4 ${message.hashId === user.hashId ? "justify-end" : "justify-start"}`}>
+              className={`flex items-start gap-4 ${
+                message.hashId === user.hashId ? "justify-end" : "justify-start"
+              }`}
+            >
               {message.hashId !== user.hashId && (
                 <Image
                   src={avatar}
@@ -124,9 +176,12 @@ export default function Chat({ slug }: { slug?: string }) {
                 />
               )}
               <div
-                className={`px-4 py-3 rounded-2xl max-w-lg ${message.hashId === user.hashId
-                  ? "bg-green-600 text-white rounded-br-none"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none shadow-sm"}`}>
+                className={`px-4 py-3 rounded-2xl max-w-lg ${
+                  message.hashId === user.hashId
+                    ? "bg-green-600 text-white rounded-br-none"
+                    : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none shadow-sm"
+                }`}
+              >
                 <p>{message.text}</p>
               </div>
             </div>

@@ -128,7 +128,7 @@ export const getprofileByConversationId = async (
             _id: 1,
             name: 1,
             photo: 1,
-            status: 1,
+            lastActive: 1,
           },
         },
       },

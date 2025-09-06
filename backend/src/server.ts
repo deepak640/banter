@@ -94,6 +94,8 @@ app.use(function (req, res, next) {
 
 app.use(errorHandler);
 
+const onlineUsers = new Map();
+
 // Socket.IO event handlers
 io.on("connection", async (socket: Socket) => {
   const { userId, conversationId } = socket.handshake.query;
@@ -106,26 +108,43 @@ io.on("connection", async (socket: Socket) => {
     return;
   }
 
-  const check = await Conversation.findOne({
+  const conversation = await Conversation.findOne({
     _id: conversationId,
     participants: { $in: [userId] },
   });
-  if (!check) {
+
+  if (!conversation) {
     const errorMsg = `Socket ${socket.id} tried to join conversation ${conversationId} but is not a participant`;
     socket.emit("error", { message: errorMsg });
     socket.disconnect();
-  }
-  if (conversationId) {
-    socket.join(conversationId);
-    await User.updateOne({ _id: userId }, { status: true });
+    return;
   }
 
-  // ✅ Correct: Listen on the socket, not io
+  if (conversationId) {
+    socket.join(conversationId as string);
+    onlineUsers.set(userId, socket.id);
+
+    // Notify others in the room that this user is online
+    io.to(conversationId as string).emit("user-status", {
+      userId,
+      status: true,
+    });
+
+    // Check the status of the other user in the conversation and notify the current user
+    const otherUser = conversation.participants.find(
+      (p) => p.toString() !== userId
+    );
+    if (otherUser && onlineUsers.has(otherUser.toString())) {
+      socket.emit("user-status", {
+        userId: otherUser.toString(),
+        status: true,
+      });
+    }
+  }
+
   type MessageData = { conversationId: string; text: string; hashId: string };
 
   socket.on("send-message", async (data: MessageData) => {
-    // Emit the message only to the room with the given conversationId
-    // Save the message to the database
     const message = new Message({
       conversationId: data.conversationId,
       content: data.text,
@@ -137,14 +156,12 @@ io.on("connection", async (socket: Socket) => {
 
   // Listen for typing events
   socket.on("typing-start", (data: MessageData) => {
-    // Broadcast to others in the room that a user is typing
     socket.to(data.conversationId).emit("typing-start-notification", {
       hashId: data.hashId,
     });
   });
 
   socket.on("typing-stop", (data: MessageData) => {
-    // Broadcast to others in the room that a user has stopped typing
     socket.to(data.conversationId).emit("typing-stop-notification", {
       hashId: data.hashId,
     });
@@ -153,7 +170,14 @@ io.on("connection", async (socket: Socket) => {
   socket.on("disconnect", async () => {
     console.log(`Client disconnected: ${socket.id}`);
     if (userId) {
-      await User.findOneAndUpdate({ _id: userId }, { status: false });
+      onlineUsers.delete(userId);
+      const lastActive = new Date();
+      await User.findOneAndUpdate({ _id: userId }, { lastActive });
+      io.to(conversationId as string).emit("user-status", {
+        userId,
+        status: false,
+        lastActive,
+      });
     }
   });
 });

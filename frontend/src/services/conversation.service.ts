@@ -32,10 +32,12 @@ export const useGetConversations = (userId: string) => {
   });
 };
 
-export const useGetprofileByConversationId = (conversationId: string) => {
+export const useGetprofileByConversationId = (conversationId: string, userStatus: boolean) => {
   return useQuery({
-    queryKey: ["conversation-profile", conversationId],
+    queryKey: ["conversation-profile", conversationId, userStatus],
     queryFn: () =>
-      getUserprofilebyConversationId(conversationId).then((data) => data.participants)  ,
+      getUserprofilebyConversationId(conversationId).then(
+        (data) => data.participants
+      ),
   });
 };

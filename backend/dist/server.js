@@ -80,6 +80,7 @@ app.use(function (req, res, next) {
     next((0, http_errors_1.default)(404));
 });
 app.use(errorHandler_middleware_1.errorHandler);
+const onlineUsers = new Map();
 // Socket.IO event handlers
 io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId, conversationId } = socket.handshake.query;
@@ -90,22 +91,34 @@ io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
         socket.disconnect();
         return;
     }
-    const check = yield conversation_model_1.Conversation.findOne({
+    const conversation = yield conversation_model_1.Conversation.findOne({
         _id: conversationId,
         participants: { $in: [userId] },
     });
-    if (!check) {
+    if (!conversation) {
         const errorMsg = `Socket ${socket.id} tried to join conversation ${conversationId} but is not a participant`;
         socket.emit("error", { message: errorMsg });
         socket.disconnect();
+        return;
     }
     if (conversationId) {
         socket.join(conversationId);
-        yield user_model_1.User.updateOne({ _id: userId }, { status: true });
+        onlineUsers.set(userId, socket.id);
+        // Notify others in the room that this user is online
+        io.to(conversationId).emit("user-status", {
+            userId,
+            status: true,
+        });
+        // Check the status of the other user in the conversation and notify the current user
+        const otherUser = conversation.participants.find((p) => p.toString() !== userId);
+        if (otherUser && onlineUsers.has(otherUser.toString())) {
+            socket.emit("user-status", {
+                userId: otherUser.toString(),
+                status: true,
+            });
+        }
     }
     socket.on("send-message", (data) => __awaiter(void 0, void 0, void 0, function* () {
-        // Emit the message only to the room with the given conversationId
-        // Save the message to the database
         const message = new message_model_1.Message({
             conversationId: data.conversationId,
             content: data.text,
@@ -116,13 +129,11 @@ io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
     }));
     // Listen for typing events
     socket.on("typing-start", (data) => {
-        // Broadcast to others in the room that a user is typing
         socket.to(data.conversationId).emit("typing-start-notification", {
             hashId: data.hashId,
         });
     });
     socket.on("typing-stop", (data) => {
-        // Broadcast to others in the room that a user has stopped typing
         socket.to(data.conversationId).emit("typing-stop-notification", {
             hashId: data.hashId,
         });
@@ -130,7 +141,14 @@ io.on("connection", (socket) => __awaiter(void 0, void 0, void 0, function* () {
     socket.on("disconnect", () => __awaiter(void 0, void 0, void 0, function* () {
         console.log(`Client disconnected: ${socket.id}`);
         if (userId) {
-            yield user_model_1.User.findOneAndUpdate({ _id: userId }, { status: false });
+            onlineUsers.delete(userId);
+            const lastActive = new Date();
+            yield user_model_1.User.findOneAndUpdate({ _id: userId }, { lastActive });
+            io.to(conversationId).emit("user-status", {
+                userId,
+                status: false,
+                lastActive,
+            });
         }
     }));
 }));

@@ -13,9 +13,10 @@ interface AppError extends Error {
 }
 import createError from "http-errors";
 import { Conversation } from "models/conversation.model";
-import mongoose, { Types } from "mongoose";
+import { Types } from "mongoose";
 import { User } from "models/user.model";
 import { Message } from "models/message.model";
+import path from "path";
 
 connectDB();
 
@@ -42,10 +43,9 @@ interface User {
 
 // Middlewares
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "1024mb" }));
+app.use(express.urlencoded({ extended: true, limit: "1024mb" }));
 app.use(logger("dev"));
-
-// CORS middleware
 app.use(((req: Request, res: Response, next: NextFunction) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -69,7 +69,7 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-app.use("/v1", v1Router);
+app.use("/public", express.static(path.join(__dirname, "../public")));app.use("/v1", v1Router);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

@@ -12,6 +12,7 @@ import {
   FiEye,
   FiEyeOff,
 } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const [step, setStep] = useState(1); // 1 for registration, 2 for profile pic
@@ -23,7 +24,7 @@ export default function RegisterForm() {
     password: "",
     confirmPassword: "",
   });
-
+  const router = useRouter()
   const [errors, setErrors] = useState({
     password: "",
     confirmPassword: "",
@@ -113,7 +114,10 @@ export default function RegisterForm() {
         if (profileImage) {
           const form = new FormData();
           form.append("file", profileImage);
-          await updateUser(form);
+          const {data} = await updateUser(form);
+          if (data) {
+            router.push('/login')
+          }
         }
       } catch (error: any) {
         toastError(

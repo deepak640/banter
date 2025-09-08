@@ -7,6 +7,7 @@ import { useUserById } from '../../services/user.service';
 import { useAuth } from '../../Hooks/useAuth';
 import { removeToken } from '../../utils/auth';
 import { useRouter } from 'next/navigation';
+import generateFilePath from '@/helpers/generateFilePath';
 
 const Header = () => {
   const { user } = useAuth();
@@ -25,7 +26,7 @@ const Header = () => {
       <div className="flex items-center">
         <div className="relative w-10 h-10">
           <Image
-            src={Profile?.photo ?? avatar}
+            src={Profile?.photo ?  generateFilePath(Profile?.photo) : avatar}
             alt="User Avatar"
             layout="fill"
             objectFit="cover"
@@ -33,8 +34,12 @@ const Header = () => {
           />
         </div>
         <div className="ml-4">
-          <h2 className="text-lg font-semibold text-green-900 dark:text-white">{Profile?.name}</h2>
-          <p className="text-sm text-green-500 dark:text-green-400">Welcome back!</p>
+          <h2 className="text-lg font-semibold text-green-900 dark:text-white">
+            {Profile?.name}
+          </h2>
+          <p className="text-sm text-green-500 dark:text-green-400">
+            Welcome back!
+          </p>
         </div>
       </div>
       <div className="flex items-center space-x-4">
@@ -57,7 +62,7 @@ const Header = () => {
         </button>
       </div>
     </header>
-  )
+  );
 }
 
 export default Header

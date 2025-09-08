@@ -1,13 +1,14 @@
 "use client";
-import React, { useState } from 'react';
-import { ChevronLeft, MessageSquarePlus, Plus,  Users } from 'lucide-react';
-import Custommodal from './Custommodal';
-import StartChat from './StartChat';
-import { useGetConversations } from '@/services/conversation.service';
-import { useAuth } from '@/Hooks/useAuth';
-import Image from 'next/image';
+import React, { useState } from "react";
+import { ChevronLeft, MessageSquarePlus, Plus, Users } from "lucide-react";
+import Custommodal from "./Custommodal";
+import StartChat from "./StartChat";
+import { useGetConversations } from "@/services/conversation.service";
+import { useAuth } from "@/Hooks/useAuth";
+import Image from "next/image";
 import avatar from "@/images/avtar.jpg";
-import Link from 'next/link';
+import Link from "next/link";
+import generateFilePath from "@/helpers/generateFilePath";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -58,7 +59,9 @@ const Sidebar = () => {
                   >
                     <div className="relative">
                       <Image
-                        src={conversation.userProfile??avatar}
+                        src={
+                          generateFilePath(conversation.userProfile) ?? avatar
+                        }
                         alt="User Avatar"
                         width={48}
                         height={48}

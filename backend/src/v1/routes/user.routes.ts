@@ -1,4 +1,5 @@
 import express from "express";
+import upload from "middlewares/multer.middleware";
 import {
   loginUser,
   RegisterUser,
@@ -6,7 +7,6 @@ import {
   updateById,
   getUserById,
 } from "v1/controllers/user.controller";
-import upload from "../../middlewares/multer.middleware";
 
 const router = express.Router();
 

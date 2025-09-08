@@ -62,7 +62,7 @@ export const loginUser = async (
     JWTtoken = await GenerateToken(Existuser);
 
     res.status(200).json({
-      success:true,
+      success: true,
       user: {
         _id: Existuser._id,
         hashId: Existuser.hashId,
@@ -110,19 +110,12 @@ export const updateById = async (
 ) => {
   try {
     const { id } = req.params;
-    let updateData = req.body;
-    if ((req as any).file) {
-      const photo = (req as any).file;
-      const blobName = `profile-${Date.now()}.jpg`;
-      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-
-      // Upload the file to Azure Blob Storage
-      await blockBlobClient.upload(photo.buffer, photo.size);
-      updateData.photo = `https://${process.env.AZURE_STORAGE_ACCOUNT_NAME}.blob.core.windows.net/${containerClient.containerName}/${blobName}`;
+    console.log(JSON.stringify(req.body), null, 2);
+    if (!req.file) {
+      res.status(400).json({ success: false, message: "No file uploaded" });
     }
-
-    console.log(updateData, "||new");
-    const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+    req.body.photo = req.file?.filename;
+    const updatedUser = await User.findByIdAndUpdate(id, req.body, {
       new: true,
     });
     if (!updatedUser) {
@@ -131,7 +124,6 @@ export const updateById = async (
 
     res.status(200).json({
       message: "User updated successfully",
-      data: updatedUser,
     });
   } catch (error) {
     console.log(error);

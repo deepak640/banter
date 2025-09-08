@@ -12,6 +12,7 @@ import { useGetMessages } from "../../services/message.service";
 import { useAuth } from "../../Hooks/useAuth";
 import Loader from "./Loader";
 import moment from "moment";
+import generateFilePath from "@/helpers/generateFilePath";
 
 export default function Chat({ slug }: { slug?: string }) {
   const { user } = useAuth();
@@ -126,7 +127,7 @@ export default function Chat({ slug }: { slug?: string }) {
       <header className="flex items-center justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center">
           <Image
-            src={peerProfile?.photo ?? avatar}
+            src={generateFilePath(peerProfile?.photo) ?? avatar}
             alt="User Avatar"
             width={40}
             height={40}

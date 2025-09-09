@@ -13,6 +13,7 @@ import { useAuth } from "../../Hooks/useAuth";
 import Loader from "./Loader";
 import moment from "moment";
 import generateFilePath from "@/helpers/generateFilePath";
+import axios from "axios";
 
 export default function Chat({ slug }: { slug?: string }) {
   const { user } = useAuth();
@@ -24,8 +25,10 @@ export default function Chat({ slug }: { slug?: string }) {
   const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
 
   const [messages, setMessages] = useState<Message[]>([]);
+  console.log(messages);
   const [userStatus, setUserStatus] = useState(false);
   const [peerProfile, setPeerProfile] = useState<any>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // API
   const { data: participants } = useGetprofileByConversationId(
@@ -49,8 +52,34 @@ export default function Chat({ slug }: { slug?: string }) {
     }
   }, [userProfile]);
 
-  const handleSendMessage = () => {
-    if (input.trim() && socket.current) {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+
+  const handleSendMessage = async () => {
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("image", selectedFile);
+
+      try {
+        const res = await axios.post("http://localhost:4000/v1/upload", formData);
+        const imageUrl = res.data.url;
+
+        if (socket.current) {
+          socket.current.emit("sendImage", {
+            imageUrl,
+            hashId: user.hashId,
+            conversationId: slug,
+          });
+        }
+        setSelectedFile(null);
+      } catch (error) {
+        toastError("Image upload failed");
+        console.error(error);
+      }
+    } else if (input.trim() && socket.current) {
       const message = {
         text: input,
         hashId: user.hashId,
@@ -99,14 +128,20 @@ export default function Chat({ slug }: { slug?: string }) {
       setMessages((prev) => [...prev, msg]);
     };
 
+    const handleReceiveImage = (img: any) => {
+      setMessages((prev) => [...prev, img]);
+    };
+
     socket.current.on("user-status", handleUserStatus);
     socket.current.on("error", handleError);
     socket.current.on("receive-message", handleReceiveMessage);
+    socket.current.on("receive-image", handleReceiveImage);
 
     return () => {
       socket.current?.off("user-status", handleUserStatus);
       socket.current?.off("error", handleError);
       socket.current?.off("receive-message", handleReceiveMessage);
+      socket.current?.off("receive-image", handleReceiveImage);
     };
   }, [socket, user, peerProfile]);
 
@@ -183,7 +218,25 @@ export default function Chat({ slug }: { slug?: string }) {
                     : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none shadow-sm"
                 }`}
               >
-                <p>{message.text}</p>
+                {(message.text && message.type !== "image") && <p>{message.text}</p>}
+                {message.imageUrl && (
+                  <Image
+                    src={message.imageUrl}
+                    alt="Sent image"
+                    width={200}
+                    height={200}
+                    className="rounded-lg"
+                  />
+                )}
+                {message.type === "image" && (
+                  <Image
+                    src={message.text}
+                    alt="Sent image"
+                    width={200}
+                    height={200}
+                    className="rounded-lg"
+                  />
+                )}
               </div>
             </div>
           ))}
@@ -193,10 +246,12 @@ export default function Chat({ slug }: { slug?: string }) {
 
       <footer className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
         <Searchbox
+        isUploading={false}
           setInput={setInput}
           value={input}
           handleSendMessage={handleSendMessage}
           handleKeyDown={handleKeyDown}
+          handleFileChange={handleFileChange}
         />
       </footer>
     </div>

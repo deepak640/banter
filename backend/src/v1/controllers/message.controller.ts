@@ -35,6 +35,7 @@ export const getAllMessages = async (
         $project: {
           _id: 1,
           text: "$content",
+          type: 1,
           conversationId: 1,
           createdAt: 1,
           hashId: "$senderInfo.hashId",

@@ -61,15 +61,8 @@ app.use(((req: Request, res: Response, next: NextFunction) => {
   next();
 }) as (req: Request, res: Response, next: NextFunction) => void);
 
-// Routes
-app.get("/", (req: Request, res: Response) => {
-  res.status(200).json({
-    message: "Server is running successfully",
-    status: "OK",
-  });
-});
-
-app.use("/public", express.static(path.join(__dirname, "../public")));app.use("/v1", v1Router);
+app.use("/public", express.static(path.join(__dirname, "../public")));
+app.use("/v1", v1Router);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
@@ -142,6 +135,20 @@ io.on("connection", async (socket: Socket) => {
     }
   }
 
+  socket.on("sendImage", async ({ imageUrl, hashId, conversationId }) => {
+    const message = new Message({
+      conversationId,
+      content: imageUrl,
+      type: "image",
+      sender: userId,
+    });
+    await message.save();
+    io.to(conversationId).emit("receive-message", {
+      imageUrl,
+      hashId,
+      conversationId,
+    });
+  });
   type MessageData = { conversationId: string; text: string; hashId: string };
 
   socket.on("send-message", async (data: MessageData) => {

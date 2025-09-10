@@ -64,7 +64,7 @@ export default function Chat({ slug }: { slug?: string }) {
       formData.append("image", selectedFile);
 
       try {
-        const res = await axios.post("http://localhost:4000/v1/upload", formData);
+        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/upload`, formData);
         const imageUrl = res.data.url;
 
         if (socket.current) {

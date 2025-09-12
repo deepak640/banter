@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Searchbox from "./Searchbox";
 import { useSocket } from "../../Hooks/useSocket";
 import { Message } from "../../types/state";
@@ -13,7 +13,7 @@ import { useAuth } from "../../Hooks/useAuth";
 import Loader from "./Loader";
 import moment from "moment";
 import generateFilePath from "@/helpers/generateFilePath";
-import axios from "axios";
+import { ImageSend } from "./ImageSend";
 
 export default function Chat({ slug }: { slug?: string }) {
   const { user } = useAuth();
@@ -22,13 +22,12 @@ export default function Chat({ slug }: { slug?: string }) {
     conversationId: slug ?? "",
   });
   const [input, setInput] = useState("");
-  const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [messages, setMessages] = useState<Message[]>([]);
-  console.log(messages);
   const [userStatus, setUserStatus] = useState(false);
   const [peerProfile, setPeerProfile] = useState<any>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // API
   const { data: participants } = useGetprofileByConversationId(
@@ -36,6 +35,7 @@ export default function Chat({ slug }: { slug?: string }) {
     userStatus
   );
   const { data: messagesData, isLoading } = useGetMessages(slug ?? "");
+
   useEffect(() => {
     if (messagesData) {
       setMessages(messagesData);
@@ -52,34 +52,8 @@ export default function Chat({ slug }: { slug?: string }) {
     }
   }, [userProfile]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setSelectedFile(e.target.files[0]);
-    }
-  };
-
   const handleSendMessage = async () => {
-    if (selectedFile) {
-      const formData = new FormData();
-      formData.append("image", selectedFile);
-
-      try {
-        const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/v1/upload`, formData);
-        const imageUrl = res.data.url;
-
-        if (socket.current) {
-          socket.current.emit("sendImage", {
-            imageUrl,
-            hashId: user.hashId,
-            conversationId: slug,
-          });
-        }
-        setSelectedFile(null);
-      } catch (error) {
-        toastError("Image upload failed");
-        console.error(error);
-      }
-    } else if (input.trim() && socket.current) {
+    if (input.trim() && socket.current) {
       const message = {
         text: input,
         hashId: user.hashId,
@@ -87,6 +61,16 @@ export default function Chat({ slug }: { slug?: string }) {
       };
       socket.current.emit("send-message", message);
       setInput("");
+    }
+  };
+
+  const handleSendImage = (imageUrl: string) => {
+    if (socket.current) {
+      socket.current.emit("sendImage", {
+        imageUrl,
+        hashId: user.hashId,
+        conversationId: slug,
+      });
     }
   };
 
@@ -175,7 +159,7 @@ export default function Chat({ slug }: { slug?: string }) {
             <div className="flex items-center gap-2">
               <span
                 className={`inline-block w-2 h-2 ${
-                  userStatus ? "bg-green-500" : "bg-gray-400"
+                  userStatus ? "bg-green-500" : "bg-gray-400" 
                 } rounded-full`}
               ></span>
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -221,7 +205,7 @@ export default function Chat({ slug }: { slug?: string }) {
                 {(message.text && message.type !== "image") && <p>{message.text}</p>}
                 {message.imageUrl && (
                   <Image
-                    src={message.imageUrl}
+                    src={generateFilePath(message.imageUrl)}
                     alt="Sent image"
                     width={200}
                     height={200}
@@ -230,7 +214,7 @@ export default function Chat({ slug }: { slug?: string }) {
                 )}
                 {message.type === "image" && (
                   <Image
-                    src={message.text}
+                    src={generateFilePath(message.text)}
                     alt="Sent image"
                     width={200}
                     height={200}
@@ -245,13 +229,14 @@ export default function Chat({ slug }: { slug?: string }) {
       </main>
 
       <footer className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+        <ImageSend onSend={handleSendImage} ref={fileInputRef} />
         <Searchbox
-        isUploading={false}
+          isUploading={false}
           setInput={setInput}
           value={input}
           handleSendMessage={handleSendMessage}
           handleKeyDown={handleKeyDown}
-          handleFileChange={handleFileChange}
+          onFileSelect={() => fileInputRef.current?.click()}
         />
       </footer>
     </div>

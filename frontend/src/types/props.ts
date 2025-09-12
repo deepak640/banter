@@ -3,6 +3,6 @@ export interface SearchboxProps {
   value: string;
   handleSendMessage: () => void;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  handleFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFileSelect: () => void;
   isUploading: boolean;
 }

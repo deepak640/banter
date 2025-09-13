@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction, Application } from "express";
 import express from "express";
 import { createServer } from "http";
 import { Server, Socket } from "socket.io";
-import v1Router from "v1/v1.routes";
+import v1Router from "./v1/v1.routes";
 import connectDB from "./db/connection";
 import cors from "cors";
 import logger from "morgan";

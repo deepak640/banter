@@ -24,7 +24,7 @@ export default function RegisterForm() {
     password: "",
     confirmPassword: "",
   });
-  const router = useRouter()
+  const router = useRouter();
   const [errors, setErrors] = useState({
     password: "",
     confirmPassword: "",
@@ -114,9 +114,9 @@ export default function RegisterForm() {
         if (profileImage) {
           const form = new FormData();
           form.append("file", profileImage);
-          const {data} = await updateUser(form);
+          const { data } = await updateUser(form);
           if (data) {
-            router.push('/login')
+            router.push("/login");
           }
         }
       } catch (error: any) {
@@ -137,10 +137,7 @@ export default function RegisterForm() {
       {step === 1 && (
         <>
           <div className="space-y-1">
-            <label
-              htmlFor="name"
-              className="text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="name" className="text-sm font-medium text-gray-700">
               Full Name
             </label>
             <div className="relative">

@@ -1,4 +1,4 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios, { AxiosResponse } from "axios";
 import { BASE_URL } from "./url.service";
 import { credentials } from "@/types/service";
@@ -11,6 +11,7 @@ interface User {
   _id: string;
   name: string;
   email: string;
+  phone?: string;
   password?: string;
   photo?: string;
   createdAt?: string;
@@ -21,7 +22,9 @@ const registerUser = async (obj: credentials) => {
   return axios.post(`${prifix}/register`, obj);
 };
 
-export const loginUser = async (obj: credentials): Promise<AxiosResponse<LoginResponseData>> => {
+export const loginUser = async (
+  obj: credentials
+): Promise<AxiosResponse<LoginResponseData>> => {
   return await axios.post(`${prifix}/login`, obj);
 };
 
@@ -30,8 +33,12 @@ const getAllUser = async (obj: any) => {
   return await axios.get(`${prifix}?${query}`);
 };
 
-const updateById = async (id: string, obj: any) => {
-  return await axios.patch(`${prifix}/${id}`, obj);
+const updateById = async (id: string, obj: FormData) => {
+  return await axios.patch(`${prifix}/${id}`, obj, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
 
 const getUserById = async (id: string) => {
@@ -41,10 +48,12 @@ const getUserById = async (id: string) => {
 
 // API Hooks
 export const useUpdateUser = (id: string) => {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (obj: any) => updateById(id, obj),
+    mutationFn: (obj: FormData) => updateById(id, obj),
     onSuccess: () => {
       toastSuccess("User updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["user", id] });
     },
   });
 };

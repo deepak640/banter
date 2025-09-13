@@ -4,12 +4,8 @@ import { comparePassword, encryptPassword } from "../../helpers/bcrypt";
 import { GenerateToken } from "../../helpers/jwt";
 import { generateUniqueCode } from "../../helpers/unqiueCode";
 import mongoose, { PipelineStage } from "mongoose";
-const { BlobServiceClient } = require("@azure/storage-blob");
-
-const blobServiceClient = BlobServiceClient.fromConnectionString(
-  process.env.AZURE_URI
-);
-const containerClient = blobServiceClient.getContainerClient("uploads"); // Replace with your container name
+import cloudinary from "../../config/cloudinary.config";
+import extractPublicId from "helpers/extractPublicId";
 
 export const RegisterUser = async (
   req: Request,
@@ -111,17 +107,28 @@ export const updateById = async (
   try {
     const { id } = req.params;
     console.log(JSON.stringify(req.body), null, 2);
-    if (!req.file) {
+    const user = await User.findById(id);
+    if (!user && !req.file) {
       res.status(400).json({ success: false, message: "No file uploaded" });
     }
-    req.body.photo = req.file?.filename;
+    console.log("user", user);
+    if (user?.photo && req.file) {
+      const publicId = extractPublicId(user.photo);
+      await cloudinary.uploader.destroy(publicId);
+    }
+    let result;
+    if (req.file) {
+      result = await cloudinary.uploader.upload(req?.file?.path, {
+        folder: "uploads",
+      });
+      req.body.photo = result.secure_url;
+    }
     const updatedUser = await User.findByIdAndUpdate(id, req.body, {
       new: true,
     });
     if (!updatedUser) {
       res.status(404).json({ message: "User not found" });
     }
-
     res.status(200).json({
       message: "User updated successfully",
     });

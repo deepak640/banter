@@ -5,8 +5,7 @@ import { useAuth } from '../../Hooks/useAuth'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Loader from './Loader' // Import the Loader component
-import generateFilePath from '@/helpers/generateFilePath'
-
+import avatar from '../../images/avtar.jpg'
 const StartChat = ({ setOpen }: {
   setOpen: any
 }) => {
@@ -43,7 +42,7 @@ const StartChat = ({ setOpen }: {
           <li key={user._id} className="p-2 border-1 my-1 rounded-sm hover:bg-gray-300 transition-colors cursor-pointer duration-150" onClick={() => handleClick(user._id)}>
             <div className='flex items-center'>
               <Image
-                src={(generateFilePath(user.photo) || '/default-profile.png')}
+                src={user.photo ?? avatar}
                 alt="profile"
                 className='w-10 h-10 rounded-full'
                 width={40}

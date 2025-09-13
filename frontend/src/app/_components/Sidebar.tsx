@@ -8,7 +8,6 @@ import { useAuth } from "@/Hooks/useAuth";
 import Image from "next/image";
 import avatar from "@/images/avtar.jpg";
 import Link from "next/link";
-import generateFilePath from "@/helpers/generateFilePath";
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(true);
@@ -59,9 +58,7 @@ const Sidebar = () => {
                   >
                     <div className="relative">
                       <Image
-                        src={
-                          generateFilePath(conversation.userProfile) ?? avatar
-                        }
+                        src={conversation.userProfile ?? avatar}
                         alt="User Avatar"
                         width={48}
                         height={48}

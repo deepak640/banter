@@ -12,7 +12,6 @@ import { useGetMessages } from "../../services/message.service";
 import { useAuth } from "../../Hooks/useAuth";
 import Loader from "./Loader";
 import moment from "moment";
-import generateFilePath from "@/helpers/generateFilePath";
 import { ImageSend } from "./ImageSend";
 
 export default function Chat({ slug }: { slug?: string }) {
@@ -146,7 +145,7 @@ export default function Chat({ slug }: { slug?: string }) {
       <header className="flex items-center justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center">
           <Image
-            src={generateFilePath(peerProfile?.photo) ?? avatar}
+            src={peerProfile?.photo ?? avatar}
             alt="User Avatar"
             width={40}
             height={40}
@@ -159,7 +158,7 @@ export default function Chat({ slug }: { slug?: string }) {
             <div className="flex items-center gap-2">
               <span
                 className={`inline-block w-2 h-2 ${
-                  userStatus ? "bg-green-500" : "bg-gray-400" 
+                  userStatus ? "bg-green-500" : "bg-gray-400"
                 } rounded-full`}
               ></span>
               <p className="text-sm text-gray-500 dark:text-gray-400">
@@ -205,7 +204,7 @@ export default function Chat({ slug }: { slug?: string }) {
                 {(message.text && message.type !== "image") && <p>{message.text}</p>}
                 {message.imageUrl && (
                   <Image
-                    src={generateFilePath(message.imageUrl)}
+                    src={message.imageUrl}
                     alt="Sent image"
                     width={200}
                     height={200}
@@ -214,7 +213,7 @@ export default function Chat({ slug }: { slug?: string }) {
                 )}
                 {message.type === "image" && (
                   <Image
-                    src={generateFilePath(message.text)}
+                    src={message.text}
                     alt="Sent image"
                     width={200}
                     height={200}

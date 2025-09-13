@@ -5,7 +5,7 @@ import { GenerateToken } from "../../helpers/jwt";
 import { generateUniqueCode } from "../../helpers/unqiueCode";
 import mongoose, { PipelineStage } from "mongoose";
 import cloudinary from "../../config/cloudinary.config";
-import extractPublicId from "helpers/extractPublicId";
+import extractPublicId from "../../helpers/extractPublicId";
 
 export const RegisterUser = async (
   req: Request,

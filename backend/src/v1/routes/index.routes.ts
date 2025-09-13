@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import upload from "middlewares/multer.middleware";
+import upload from "../../middlewares/multer.middleware";
 const router = express.Router();
 
 // Routes

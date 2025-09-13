@@ -6,7 +6,7 @@ import v1Router from "./v1/v1.routes";
 import connectDB from "./db/connection";
 import cors from "cors";
 import logger from "morgan";
-import { errorHandler } from "middlewares/errorHandler.middleware";
+import { errorHandler } from "./middlewares/errorHandler.middleware";
 // Define an interface for Error objects with optional status code
 interface AppError extends Error {
   statusCode?: number;

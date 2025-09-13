@@ -1,5 +1,5 @@
 import express from "express";
-import upload from "middlewares/multer.middleware";
+import upload from "../../middlewares/multer.middleware";
 import {
   loginUser,
   RegisterUser,

@@ -1,4 +1,4 @@
-import { User } from "models/user.model";
+import { User } from "../../models/user.model";
 import { NextFunction, Request, Response } from "express";
 import { comparePassword, encryptPassword } from "helpers/bcrypt";
 import { GenerateToken } from "helpers/jwt";

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Message } from "models/message.model";
+import { Message } from "../../models/message.model";
 import mongoose from "mongoose";
 
 export const getAllMessages = async (

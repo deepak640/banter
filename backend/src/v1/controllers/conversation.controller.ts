@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { Conversation } from "models/conversation.model";
+import { Conversation } from "../../models/conversation.model";
 import { PipelineStage, Types } from "mongoose";
 
 export const createConversation = async (

@@ -12,10 +12,10 @@ interface AppError extends Error {
   statusCode?: number;
 }
 import createError from "http-errors";
-import { Conversation } from "models/conversation.model";
+import { Conversation } from "./models/conversation.model";
 import { Types } from "mongoose";
-import { User } from "models/user.model";
-import { Message } from "models/message.model";
+import { User } from "./models/user.model";
+import { Message } from "./models/message.model";
 import path from "path";
 
 connectDB();

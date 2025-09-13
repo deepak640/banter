@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { CONFIG } from "common/config";
+import { CONFIG } from "../common/config";
 
 import { jwtDecode } from "jwt-decode";
 

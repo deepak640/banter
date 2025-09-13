@@ -63,6 +63,12 @@ app.use(((req: Request, res: Response, next: NextFunction) => {
 
 app.use("/public", express.static(path.join(__dirname, "../public")));
 app.use("/v1", v1Router);
+app.get("/", (req: Request, res: Response) => {
+  res.status(200).json({
+    message: "Server is running successfully",
+    status: "OK",
+  });
+});
 
 // 404 handler
 app.use((req: Request, res: Response) => {

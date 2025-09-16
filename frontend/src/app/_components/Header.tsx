@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { LogOut, Search, Bell } from "lucide-react";
+import { LogOut, Search, Bell, Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import avatar from "../../images/avtar.jpg";
@@ -9,7 +9,7 @@ import { useAuth } from "../../Hooks/useAuth";
 import { removeToken } from "../../utils/auth";
 import { useRouter } from "next/navigation";
 
-const Header = () => {
+const Header = ({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean, toggleSidebar: () => void }) => {
   const { user } = useAuth();
   const router = useRouter();
 
@@ -23,33 +23,40 @@ const Header = () => {
 
   return (
     <header className="flex items-center justify-between h-20 px-6 bg-green-50 dark:bg-green-900 border-b border-green-200 dark:border-green-800">
-      <div className="relative group">
-        <Link href="/profile" target="_blank">
-          <div className="flex items-center">
-            <div className="relative w-10 h-10">
-              <Image
-                src={Profile?.photo ?? avatar}
-                alt="User Avatar"
-                layout="fill"
-                objectFit="cover"
-                className="rounded-full"
-              />
+      <div className="flex items-center">
+        <div className="md:hidden">
+          <button onClick={toggleSidebar}>
+            {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
+        </div>
+        <div className="relative group ml-4">
+          <Link href="/profile" target="_blank">
+            <div className="flex items-center">
+              <div className="relative w-10 h-10">
+                <Image
+                  src={Profile?.photo ?? avatar}
+                  alt="User Avatar"
+                  layout="fill"
+                  objectFit="cover"
+                  className="rounded-full"
+                />
+              </div>
+              <div className="ml-4">
+                <h2 className="text-lg font-semibold text-green-900 dark:text-white">
+                  {Profile?.name}
+                </h2>
+                <p className="text-sm text-green-500 dark:text-green-400">
+                  Welcome back!
+                </p>
+              </div>
             </div>
-            <div className="ml-4">
-              <h2 className="text-lg font-semibold text-green-900 dark:text-white">
-                {Profile?.name}
-              </h2>
-              <p className="text-sm text-green-500 dark:text-green-400">
-                Welcome back!
-              </p>
-            </div>
+          </Link>
+          <div className="absolute top-full mt-2 w-max bg-gray-800 text-white text-sm rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            Open settings
           </div>
-        </Link>
-        <div className="absolute top-full mt-2 w-max bg-gray-800 text-white text-sm rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          Open settings
         </div>
       </div>
-      <div className="flex items-center space-x-4">
+      <div className="hidden md:flex items-center space-x-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-400" />
           <input

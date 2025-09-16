@@ -5,7 +5,7 @@ import Link from "next/link"
 export default function LoginPage() {
   return (
     <div className="h-screen flex justify-center">
-      <div className="flex flex-col justify-center w-5/12 max-w-md p-8 mx-auto rounded-xl">
+      <div className="flex flex-col justify-center w-full sm:w-10/12 md:w-8/12 lg:w-5/12 max-w-md p-8 mx-auto rounded-xl">
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-800">ChatApp</h1>
           <p className="mt-2 text-gray-600">Connect with friends in real-time</p>

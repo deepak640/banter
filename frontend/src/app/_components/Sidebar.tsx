@@ -40,28 +40,28 @@ const Sidebar = ({ isSidebarOpen }: { isSidebarOpen: boolean }) => {
     <aside
       className={`absolute md:relative flex flex-col h-full bg-green-50 dark:bg-green-900 border-r border-green-200 dark:border-green-800 transition-all duration-300 ease-in-out z-10 ${
         isSidebarOpen ? "w-80" : "w-0 hidden"
-      } md:flex md:w-80 ${
-        isOpen ? "md:w-80" : "md:w-24"
-      }`}
+      } md:flex ${isOpen ? "md:w-64" : "md:w-25"}`}
     >
-      <div className="flex items-center justify-between h-20 px-6 border-b border-green-200 dark:border-green-800">
-        {isOpen && (
-          <h1 className="text-2xl font-bold text-green-900 dark:text-white">
-            Banter
-          </h1>
-        )}
-        <button
-          onClick={() => setIsOpen((prev) => !prev)}
-          className="p-2 rounded-full text-green-500 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-700 transition-colors duration-200"
-          title={isOpen ? "Collapse Sidebar" : "Expand Sidebar"}
-        >
-          <ChevronLeft
-            className={`w-6 h-6 transition-transform duration-300 ${
-              isOpen ? "" : "rotate-180"
-            }`}
-          />
-        </button>
-      </div>
+      {!isSidebarOpen && (
+        <div className="flex items-center justify-between h-20 px-6 border-b border-green-200 dark:border-green-800">
+          {isOpen && (
+            <h1 className="text-2xl font-bold text-green-900 dark:text-white">
+              Banter
+            </h1>
+          )}
+          <button
+            onClick={() => setIsOpen((prev) => !prev)}
+            className="p-4 rounded-full text-green-500 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-700 transition-colors duration-200"
+            title={isOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+          >
+            <ChevronLeft
+              className={`w-6 h-6 transition-transform duration-300 ${
+                isOpen ? "" : "rotate-180"
+              }`}
+            />
+          </button>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto">
         <div className="md:hidden p-4">
@@ -126,15 +126,15 @@ const Sidebar = ({ isSidebarOpen }: { isSidebarOpen: boolean }) => {
 
       <div className="px-6 py-4 border-t border-green-200 dark:border-green-800">
         <div className="md:hidden flex justify-around items-center">
-        <button className="p-2 rounded-full text-green-500 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-700">
-          <Bell className="w-6 h-6" />
-        </button>
-        <button
-          onClick={handleLogout}
-          className="p-2 rounded-full text-green-500 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-700"
-        >
-          <LogOut className="w-6 h-6" />
-        </button>
+          <button className="p-2 rounded-full text-green-500 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-700">
+            <Bell className="w-6 h-6" />
+          </button>
+          <button
+            onClick={handleLogout}
+            className="p-2 rounded-full text-green-500 dark:text-green-400 hover:bg-green-200 dark:hover:bg-green-700"
+          >
+            <LogOut className="w-6 h-6" />
+          </button>
         </div>
         <button
           onClick={handleOpenModal}

@@ -98,7 +98,6 @@ const onlineUsers = new Map();
 // Socket.IO event handlers
 io.on("connection", async (socket: Socket) => {
   const { userId, conversationId } = socket.handshake.query;
-
   // Check if conversationId is a valid MongoDB ObjectId
   if (!Types.ObjectId.isValid(conversationId as string)) {
     const errorMsg = `Invalid conversationId: ${conversationId}`;

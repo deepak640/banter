@@ -67,7 +67,7 @@ export const getConversations = async (
               _id: 1,
               name: 1,
               profile: 1,
-              photo:1,
+              photo: 1,
             },
           },
         ],
@@ -91,12 +91,20 @@ export const getConversations = async (
           ],
         },
       },
+    },
+    {
+      $project: {
+        participants: 0,
+        otherUsers: 0,
+      },
+    },
+    {
+      $sort: { updatedAt: -1 },
     }
   );
-  console.log("Pipeline:", JSON.stringify(pipeline, null, 2));
   const conversations = await Conversation.aggregate(pipeline).exec();
   res.json({
-    conversations: conversations,
+    data: conversations,
   });
 };
 
@@ -139,7 +147,7 @@ export const getprofileByConversationId = async (
       res.status(404).json({ message: "Conversation not found" });
     } else {
       res.json({
-        participants: result[0].participants,
+        data: result[0].participants,
       });
     }
   } catch (error) {

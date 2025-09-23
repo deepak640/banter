@@ -6,3 +6,14 @@ export interface SearchboxProps {
   onFileSelect: () => void;
   isUploading: boolean;
 }
+
+
+export interface ChatitemProps {
+  conversation: {
+    _id: string;
+    userName: string;
+    userProfile?: string;
+  };
+  isOpen: boolean;
+  onClick?: () => void;
+}

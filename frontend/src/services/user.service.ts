@@ -4,19 +4,11 @@ import { BASE_URL } from "./url.service";
 import { credentials } from "@/types/service";
 import { toastSuccess } from "@/utils/toast";
 import { LoginResponseData } from "@/types/auth";
+import { IUser } from "@/types/users";
 
 const prifix = `${BASE_URL}/users`;
 
-interface User {
-  _id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  password?: string;
-  photo?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
+
 
 const registerUser = async (obj: credentials) => {
   return axios.post(`${prifix}/register`, obj);
@@ -42,7 +34,7 @@ const updateById = async (id: string, obj: FormData) => {
 };
 
 const getUserById = async (id: string) => {
-  const res = await axios.get<{ data: User }>(`${prifix}/${id}`);
+  const res = await axios.get<{ data: IUser }>(`${prifix}/${id}`);
   return res.data;
 };
 
@@ -58,10 +50,11 @@ export const useUpdateUser = (id: string) => {
   });
 };
 
-export const useGetAllUser = (obj: any) => {
+export const useGetAllUser = ({ userId }: { userId: string }) => {
   return useQuery({
-    queryKey: ["user", obj],
-    queryFn: () => getAllUser(obj).then((res) => res.data),
+    queryKey: ["user", userId],
+    queryFn: () => getAllUser(userId).then((res) => res.data.data),
+    enabled: !!userId, // Only run if obj is truthy
   });
 };
 

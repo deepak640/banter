@@ -2,7 +2,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import Searchbox from "./Searchbox";
 import { useSocket } from "../../Hooks/useSocket";
-import { Message } from "../../types/state";
 import { toastError } from "../../utils/toast";
 import Image from "next/image";
 import avatar from "../../images/avtar.jpg";
@@ -13,6 +12,7 @@ import { useAuth } from "../../Hooks/useAuth";
 import Loader from "./Loader";
 import moment from "moment";
 import { ImageSend } from "./ImageSend";
+import { IMessage } from "@/types/message";
 
 export default function Chat({ slug }: { slug?: string }) {
   const { user } = useAuth();
@@ -24,7 +24,7 @@ export default function Chat({ slug }: { slug?: string }) {
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<IMessage[]>([]);
   const [userStatus, setUserStatus] = useState(false);
   const [peerProfile, setPeerProfile] = useState<any>(null);
 
@@ -201,7 +201,9 @@ export default function Chat({ slug }: { slug?: string }) {
                     : "bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none shadow-sm"
                 }`}
               >
-                {(message.text && message.type !== "image") && <p>{message.text}</p>}
+                {message.text && message.type !== "image" && (
+                  <p>{message.text}</p>
+                )}
                 {message.imageUrl && (
                   <Image
                     src={message.imageUrl}

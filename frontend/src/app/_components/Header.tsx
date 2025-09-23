@@ -9,7 +9,7 @@ import { useAuth } from "../../Hooks/useAuth";
 import { removeToken } from "../../utils/auth";
 import { useRouter } from "next/navigation";
 
-const Header = ({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean, toggleSidebar: () => void }) => {
+const Header = ({ isSidebarOpen, toggleSidebar }: { isSidebarOpen?: boolean, toggleSidebar?: () => void }) => {
   const { user } = useAuth();
   const router = useRouter();
 
@@ -36,8 +36,9 @@ const Header = ({ isSidebarOpen, toggleSidebar }: { isSidebarOpen: boolean, togg
                 <Image
                   src={Profile?.photo ?? avatar}
                   alt="User Avatar"
-                  layout="fill"
-                  objectFit="cover"
+                  sizes="(max-width: 768px) 100vw, 40vw"
+                  fill
+                  style={{ objectFit: "cover" }}
                   className="rounded-full"
                 />
               </div>

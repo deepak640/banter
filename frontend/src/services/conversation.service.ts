@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { BASE_URL } from "./url.service";
+import { IUserSummary, PartialConversation } from "@/types/conversation";
 const prifix = `${BASE_URL}/conversations`;
 
 const createConversation = async (obj: { users: string[] }) => {
@@ -9,13 +10,17 @@ const createConversation = async (obj: { users: string[] }) => {
 };
 
 const getConversations = async (userId: string) => {
-  const res = await axios.get(`${prifix}/${userId}`);
-  return res.data.conversations;
+  const res = await axios.get<{ data: PartialConversation[] }>(
+    `${prifix}/${userId}`
+  );
+  return res.data.data;
 };
 
 const getUserprofilebyConversationId = async (conversationId: string) => {
-  const res = await axios.get(`${prifix}/profile/${conversationId}`);
-  return res.data;
+  const res = await axios.get<{ data: IUserSummary[] }>(
+    `${prifix}/profile/${conversationId}`
+  );
+  return res.data.data;
 };
 
 // Hooks
@@ -29,15 +34,18 @@ export const useGetConversations = (userId: string) => {
   return useQuery({
     queryKey: ["conversations", userId],
     queryFn: () => getConversations(userId).then((data) => data),
+    initialData: [],
+    enabled: !!userId,
   });
 };
 
-export const useGetprofileByConversationId = (conversationId: string, userStatus: boolean) => {
+export const useGetprofileByConversationId = (
+  conversationId: string,
+  userStatus: boolean
+) => {
   return useQuery({
     queryKey: ["conversation-profile", conversationId, userStatus],
     queryFn: () =>
-      getUserprofilebyConversationId(conversationId).then(
-        (data) => data.participants
-      ),
+      getUserprofilebyConversationId(conversationId).then((data) => data),
   });
 };

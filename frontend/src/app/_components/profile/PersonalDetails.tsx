@@ -96,8 +96,8 @@ const PersonalDetails = () => {
       <p className="mt-2 text-gray-600">
         Update your profile information here.
       </p>
-      <div className="mt-8 flex gap-10">
-        <div className="w-1/4 flex flex-col items-center">
+      <div className="mt-8 flex flex-col md:flex-row gap-10">
+        <div className="w-full md:w-1/4 flex flex-col items-center">
           <div
             className="relative w-36 h-36 cursor-pointer"
             onClick={handleImageClick}
@@ -124,7 +124,7 @@ const PersonalDetails = () => {
             {name}
           </h2>
         </div>
-        <form onSubmit={handleSubmit} className="w-3/4 flex flex-col gap-6">
+        <form onSubmit={handleSubmit} className="w-full md:w-3/4 flex flex-col gap-6">
           <div className="flex flex-col gap-2">
             <label htmlFor="name" className="text-lg font-medium text-gray-700">
               Name

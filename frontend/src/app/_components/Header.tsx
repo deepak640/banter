@@ -52,7 +52,7 @@ const Header = ({ isSidebarOpen, toggleSidebar }: { isSidebarOpen?: boolean, tog
               </div>
             </div>
           </Link>
-          <div className="absolute top-full mt-2 w-max bg-gray-800 text-white text-sm rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="absolute z-99 top-full mt-2 w-max bg-gray-800 text-white text-sm rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
             Open settings
           </div>
         </div>

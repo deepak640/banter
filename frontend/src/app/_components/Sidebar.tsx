@@ -25,11 +25,10 @@ const Sidebar = ({ isSidebarOpen }: { isSidebarOpen: boolean }) => {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(true);
   const [showUsers, setShowUsers] = useState(false);
-  const { data: Allusers, } = useGetAllUser({
+  const { data: Allusers } = useGetAllUser({
     userId: user?._id,
   });
-  const { mutateAsync: createConversation} =
-    useCreateConversation();
+  const { mutateAsync: createConversation } = useCreateConversation();
 
   const userId = user?._id;
   const { data: conversations } = useGetConversations(userId ?? "");
@@ -148,7 +147,9 @@ const Sidebar = ({ isSidebarOpen }: { isSidebarOpen: boolean }) => {
           {isOpen ? (
             <>
               <MessageSquarePlus className="w-6 h-6 mr-2" />
-              <span className="font-semibold">New Conversation</span>
+              <span className="font-semibold">
+                {showUsers ? "Go back" : "New Conversation"}
+              </span>
             </>
           ) : (
             <Plus className="w-6 h-6" />

@@ -78,17 +78,39 @@ export const getAllUser = async (
 ) => {
   try {
     let pipeline: PipelineStage[] = [];
-
-    pipeline.push({
-      $match: {
-        _id: {
-          $ne:
-            typeof req.query.userId === "string"
-              ? new mongoose.Types.ObjectId(req.query.userId)
-              : null,
+    console.log("req.query", req.query.userId);
+    pipeline.push(
+      {
+        $lookup: {
+          from: "conversations",
+          let: { userId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $in: ["$$userId", "$participants"] }, // candidate user is in participants
+                    {
+                      $in: [
+                        new mongoose.Types.ObjectId(req.query.userId as string),
+                        "$participants",
+                      ],
+                    }, // logged-in user also in participants
+                    { $eq: ["$isGroup", false] }, // only 1-on-1 chats
+                  ],
+                },
+              },
+            },
+          ],
+          as: "conversations",
         },
       },
-    });
+      {
+        $match: {
+          conversations: { $size: 0 }, // only users with no existing conversation
+        },
+      }
+    );
     const user = await User.aggregate(pipeline);
     res.status(200).json({
       message: "User fetched successfully",

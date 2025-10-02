@@ -8,8 +8,6 @@ import { IUser } from "@/types/users";
 
 const prifix = `${BASE_URL}/users`;
 
-
-
 const registerUser = async (obj: credentials) => {
   return axios.post(`${prifix}/register`, obj);
 };
@@ -52,8 +50,8 @@ export const useUpdateUser = (id: string) => {
 
 export const useGetAllUser = ({ userId }: { userId: string }) => {
   return useQuery({
-    queryKey: ["user", userId],
-    queryFn: () => getAllUser(userId).then((res) => res.data.data),
+    queryKey: ["All_user", userId],
+    queryFn: () => getAllUser({ userId }).then((res) => res.data.data),
     enabled: !!userId, // Only run if obj is truthy
   });
 };
@@ -66,7 +64,7 @@ export const useAddUser = () => {
 
 export const useUserById = (id: string) => {
   return useQuery({
-    queryKey: ["user", id],
+    queryKey: ["get_user_byId", id],
     queryFn: () => getUserById(id).then((res) => res.data),
     enabled: !!id, // Only run if id is truthy
   });

@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import upload from "../../middlewares/multer.middleware";
-import cloudinary from "config/cloudinary.config";
+import cloudinary from "../../config/cloudinary.config";
 const router = express.Router();
 
 // Routes

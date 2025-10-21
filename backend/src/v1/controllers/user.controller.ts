@@ -143,17 +143,29 @@ export const updateById = async (
     if (!user && !req.file) {
       res.status(400).json({ success: false, message: "No file uploaded" });
     }
-    console.log("user", user);
     if (user?.photo && req.file) {
       const publicId = extractPublicId(user.photo);
       await cloudinary.uploader.destroy(publicId);
     }
-    let result;
-    if (req.file) {
-      result = await cloudinary.uploader.upload(req?.file?.path, {
-        folder: "uploads",
+    if (req.file?.buffer) {
+      // Upload from memory buffer (not path)
+      const uploadResult = await new Promise<{ secure_url?: string }>((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "uploads" },
+          (error: any, result: any) => {
+            if (error) reject(error);
+            else resolve(result);
+          }
+        );
+
+        // Create stream from buffer
+        const { Readable } = require("stream");
+        Readable.from(req?.file?.buffer).pipe(uploadStream);
       });
-      req.body.photo = result.secure_url;
+
+      if (uploadResult?.secure_url) {
+        req.body.photo = uploadResult.secure_url;
+      }
     }
     const updatedUser = await User.findByIdAndUpdate(id, req.body, {
       new: true,

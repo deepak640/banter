@@ -15,7 +15,7 @@ const Chatitem = ({ conversation, isOpen, onClick }: ChatitemProps) => {
       >
         <div className="relative">
           <Image
-            src={avatar}
+            src={conversation?.userProfile ?? avatar}
             alt="User Avatar"
             width={48}
             height={48}

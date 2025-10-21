@@ -99,6 +99,7 @@ const Sidebar = ({ isSidebarOpen }: { isSidebarOpen: boolean }) => {
               Allusers?.filter((user: any) => userId !== user._id).map(
                 (conversation: any) => {
                   conversation.userName = conversation.name;
+                  conversation.userProfile = conversation.photo;
                   return (
                     <Chatitem
                       onClick={() => handleCreateConversation(conversation._id)}

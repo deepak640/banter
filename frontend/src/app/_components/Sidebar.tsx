@@ -96,14 +96,19 @@ const Sidebar = ({ isSidebarOpen }: { isSidebarOpen: boolean }) => {
         <nav className="px-4 py-6">
           <ul className="space-y-2">
             {showUsers ? (
-              Allusers?.map((conversation: any) => (
-                <Chatitem
-                  onClick={() => handleCreateConversation(conversation._id)}
-                  key={conversation._id}
-                  conversation={conversation}
-                  isOpen={isOpen}
-                />
-              ))
+              Allusers?.filter((user: any) => userId !== user._id).map(
+                (conversation: any) => {
+                  conversation.userName = conversation.name;
+                  return (
+                    <Chatitem
+                      onClick={() => handleCreateConversation(conversation._id)}
+                      key={conversation._id}
+                      conversation={conversation}
+                      isOpen={isOpen}
+                    />
+                  );
+                }
+              )
             ) : conversations.length > 0 ? (
               conversations.map((conversation: any) => (
                 <Chatitem

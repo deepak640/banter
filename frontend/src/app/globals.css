@@ -3,7 +3,47 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --border: #e5e7eb;
+  --input: #f3f4f6;
+  --ring: #3b82f6;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #171717;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #f3f4f6;
+  --accent-foreground: #171717;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
 }
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --border: #27272a;
+  --input: #171717;
+  --ring: #3b82f6;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #171717;
+  --secondary-foreground: #ededed;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --muted: #171717;
+  --muted-foreground: #a1a1aa;
+  --accent: #171717;
+  --accent-foreground: #ededed;
+  --popover: #0a0a0a;
+  --popover-foreground: #ededed;
+  --card: #0a0a0a;
+  --card-foreground: #ededed;
+}
+
 
 @theme inline {
   --color-background: var(--background);

@@ -48,10 +48,16 @@ export const useUpdateUser = (id: string) => {
   });
 };
 
-export const useGetAllUser = ({ userId }: { userId: string }) => {
+export const useGetAllUser = ({
+  userId,
+  search = "",
+}: {
+  userId: string;
+  search?: string;
+}) => {
   return useQuery({
-    queryKey: ["All_user", userId],
-    queryFn: () => getAllUser({ userId }).then((res) => res.data.data),
+    queryKey: ["All_user", userId, search],
+    queryFn: () => getAllUser({ userId, search }).then((res) => res.data.data),
     enabled: !!userId, // Only run if obj is truthy
   });
 };

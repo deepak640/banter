@@ -10,7 +10,6 @@ import { removeToken } from "../../utils/auth";
 import { useRouter } from "next/navigation";
 import { useGetAllUser } from "@/services/user.service";
 import useDebounce from "@/Hooks/useDebounce";
-import ThemeSwitcher from "./ThemeSwitcher";
 
 const Header = ({
   isSidebarOpen,
